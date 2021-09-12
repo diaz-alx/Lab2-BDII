@@ -1,12 +1,12 @@
 
 CREATE TABLE clientes (
     id_cliente NUMBER NOT NULL,
-    cedula     VARCHAR2(10),
-    nombre1    VARCHAR2(45),
-    apellido1  VARCHAR2(45),
-    fecha_nac  DATE,
+    cedula     VARCHAR2(10) NOT NULL,
+    nombre1    VARCHAR2(45) NOT NULL,
+    apellido1  VARCHAR2(45) NOT NULL,
+    fecha_nac  DATE NOT NULL,
     profesion  VARCHAR2(45),
-    direccion  VARCHAR2(250),
+    direccion  VARCHAR2(250) NOT NULL,
     sexo       VARCHAR2(2)
 );
 
@@ -38,7 +38,7 @@ ALTER TABLE clientes_telefonos ADD CONSTRAINT clientes_telefonos_pk PRIMARY KEY 
 
 CREATE TABLE pagos (
     no_pago      NUMBER NOT NULL,
-    monto_pagado NUMBER(6, 4),
+    monto_pagado NUMBER(6, 4) DEFAULT 0,
     fecha_pagado DATE
 );
 
@@ -54,10 +54,10 @@ ALTER TABLE pagos_prestamos ADD CONSTRAINT pagos_prestamos_pkv2 PRIMARY KEY ( no
 
 CREATE TABLE prestamos (
     no_prestamo    NUMBER NOT NULL,
-    monto_aprobado NUMBER(6, 4),
-    fecha_aprobado DATE,
+    monto_aprobado NUMBER(6, 4) DEFAULT 0,
+    fecha_aprobado DATE NOT NULL,
     tipo_prestamo  NUMBER NOT NULL,
-    letra_mensual  NUMBER(6, 4)
+    letra_mensual  NUMBER(6, 4) DEFAULT 0
 );
 
 ALTER TABLE prestamos ADD CONSTRAINT prestamos_pk PRIMARY KEY ( no_prestamo );
@@ -71,8 +71,8 @@ ALTER TABLE tipos_correos ADD CONSTRAINT tipos_correos_pk PRIMARY KEY ( cod_corr
 
 CREATE TABLE tipos_prestamos (
     cod_prestamo    NUMBER NOT NULL,
-    nombre_prestamo VARCHAR2(45),
-    tasa_interes    NUMBER(2, 2)
+    nombre_prestamo VARCHAR2(45) NOT NULL,
+    tasa_interes    NUMBER(2, 2) DEFAULT 0
 );
 
 ALTER TABLE tipos_prestamos ADD CONSTRAINT tipos_prestamos_pk PRIMARY KEY ( cod_prestamo );

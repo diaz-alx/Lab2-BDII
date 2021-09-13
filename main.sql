@@ -18,8 +18,8 @@ CREATE TABLE clientes_correos (
     correo     VARCHAR2(100)
 );
 
-ALTER TABLE clientes_correos ADD CONSTRAINT clientes_correos_pk PRIMARY KEY ( cliente,
-                                                                              correo );
+ALTER TABLE clientes_correos ADD CONSTRAINT clientes_correos_pk PRIMARY KEY ( id_cliente,
+                                                                              id_correo );
 
 CREATE TABLE clientes_prestamos (
     id_cliente  NUMBER NOT NULL,
@@ -35,8 +35,8 @@ CREATE TABLE clientes_telefonos (
     telefono    VARCHAR2(10)
 );
 
-ALTER TABLE clientes_telefonos ADD CONSTRAINT clientes_telefonos_pk PRIMARY KEY ( cliente,
-                                                                                  telefono );
+ALTER TABLE clientes_telefonos ADD CONSTRAINT clientes_telefonos_pk PRIMARY KEY ( id_cliente,
+                                                                                  id_telefono );
 
 CREATE TABLE pagos (
     no_pago      NUMBER NOT NULL,

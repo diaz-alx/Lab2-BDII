@@ -123,3 +123,19 @@ ALTER TABLE clientes_correos
     ADD CONSTRAINT tipos_correos_fk FOREIGN KEY ( id_correo )
         REFERENCES tipos_correos ( cod_correo );
 
+---VISTA DE LOS PRESTAMOS--
+
+select	 c.CEDULA as "CEDULA",
+c.NOMBRE1 as "NOMBRE",
+	 c.APELLIDO1 as "APELLIDO",
+	 tp.NOMBRE_PRESTAMO as "TIPO_PRESTAMO",
+	 pe.NO_PRESTAMO as "NO_PRESTAMO",
+	 pe.MONTO_APROBADO as "MONTO_APROBADO",
+	 pe.LETRA_MENSUAL as "LETRA_MENSUAL",
+	 p.DESCRIPCION as "PROFESION" 
+ from	 PROFESIONES p,
+	 PRESTAMOS pe,
+	 TIPOS_PRESTAMOS tp,
+	 CLIENTES c
+     where c.id_cliente = pe.id_cliente and pe.TIPO_PRESTAMO = tp.COD_PRESTAMO and c.COD_PROFESION = p.ID_PROFESION
+order by c.CEDULA ASC;

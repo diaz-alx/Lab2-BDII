@@ -5,9 +5,9 @@ CREATE TABLE clientes (
     nombre1    VARCHAR2(45) NOT NULL,
     apellido1  VARCHAR2(45) NOT NULL,
     fecha_nac  DATE NOT NULL,
-    profesion  VARCHAR2(45),
+    cod_profesion  NUMBER NOT NULL,
     direccion  VARCHAR2(250) NOT NULL,
-    sexo       VARCHAR2(2)
+    sexo       VARCHAR2(2) NOT NULL
 );
 
 ALTER TABLE clientes ADD CONSTRAINT clientes_pk PRIMARY KEY ( id_cliente );
@@ -62,6 +62,13 @@ CREATE TABLE prestamos (
 
 ALTER TABLE prestamos ADD CONSTRAINT prestamos_pk PRIMARY KEY ( no_prestamo );
 
+CREATE TABLE profesiones (
+    id_profesion NUMBER NOT NULL,
+    descripcion  VARCHAR2(100)
+);
+
+ALTER TABLE profesiones ADD CONSTRAINT profesion_pk PRIMARY KEY ( id_profesion );
+
 CREATE TABLE tipos_correos (
     cod_correo  NUMBER NOT NULL,
     descripcion VARCHAR2(50)
@@ -91,6 +98,10 @@ ALTER TABLE clientes_correos
 ALTER TABLE clientes_prestamos
     ADD CONSTRAINT clientes_prest_fk FOREIGN KEY ( id_cliente )
         REFERENCES clientes ( id_cliente );
+
+ALTER TABLE clientes
+    ADD CONSTRAINT clientes_profesion_fk FOREIGN KEY ( cod_profesion )
+        REFERENCES profesiones ( id_profesion );
 
 ALTER TABLE clientes_telefonos
     ADD CONSTRAINT clientes_telefonos_fk FOREIGN KEY ( cliente )

@@ -13,8 +13,8 @@ CREATE TABLE clientes (
 ALTER TABLE clientes ADD CONSTRAINT clientes_pk PRIMARY KEY ( id_cliente );
 
 CREATE TABLE clientes_correos (
-    cliente NUMBER NOT NULL,
-    correo  NUMBER NOT NUL,
+    id_cliente NUMBER NOT NULL,
+    id_correo  NUMBER NOT NULL,
     correo     VARCHAR2(100)
 );
 
@@ -30,8 +30,8 @@ ALTER TABLE clientes_prestamos ADD CONSTRAINT clientes_prestamos_pk PRIMARY KEY 
                                                                                   no_prestamo );
 
 CREATE TABLE clientes_telefonos (
-    cliente  NUMBER NOT NULL,
-    telefono NUMBER NOT NULL,
+    id_cliente  NUMBER NOT NULL,
+    id_telefono NUMBER NOT NULL,
     telefono    VARCHAR2(10)
 );
 
@@ -94,7 +94,7 @@ CREATE TABLE tipos_telefonos (
 ALTER TABLE tipos_telefonos ADD CONSTRAINT tipos_telefonos_pk PRIMARY KEY ( cod_telefono );
 
 ALTER TABLE clientes_correos
-    ADD CONSTRAINT clientes_fk FOREIGN KEY ( cliente )
+    ADD CONSTRAINT clientes_fk FOREIGN KEY ( id_cliente )
         REFERENCES clientes ( id_cliente );
 
 ALTER TABLE clientes_prestamos
@@ -106,11 +106,11 @@ ALTER TABLE clientes
         REFERENCES profesiones ( id_profesion );
 
 ALTER TABLE clientes_telefonos
-    ADD CONSTRAINT clientes_telefonos_fk FOREIGN KEY ( cliente )
+    ADD CONSTRAINT clientes_telefonos_fk FOREIGN KEY ( id_cliente )
         REFERENCES clientes ( id_cliente );
 
 ALTER TABLE clientes_telefonos
-    ADD CONSTRAINT clientes_tipos_telefonos_fk FOREIGN KEY ( telefono )
+    ADD CONSTRAINT clientes_tipos_telefonos_fk FOREIGN KEY ( id_telefono )
         REFERENCES tipos_telefonos ( cod_telefono );
 
 ALTER TABLE pagos_prestamos
@@ -130,6 +130,6 @@ ALTER TABLE prestamos
         REFERENCES tipos_prestamos ( cod_prestamo );
 
 ALTER TABLE clientes_correos
-    ADD CONSTRAINT tipos_correos_fk FOREIGN KEY ( correo )
+    ADD CONSTRAINT tipos_correos_fk FOREIGN KEY ( id_correo )
         REFERENCES tipos_correos ( cod_correo );
 

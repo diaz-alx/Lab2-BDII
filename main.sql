@@ -42,7 +42,7 @@ CREATE TABLE clientes (
 CREATE TABLE tipos_prestamos (
     cod_prestamo    NUMBER NOT NULL,
     nombre_prestamo VARCHAR2(45),
-    tasa_interes    NUMBER(2, 2),
+    tasa_interes    NUMBER,
     CONSTRAINT tipos_prestamos_pk PRIMARY KEY ( cod_prestamo )
 );
 
@@ -103,11 +103,11 @@ CREATE TABLE prestamos (
     cod_tipo_prestamo NUMBER NOT NULL,
     no_prestamo       NUMBER,
     fecha_aprovado    DATE,
-    monto_aprobado    NUMBER(8, 4),
-    letr_mensual      NUMBER(8, 4),
-    importe_pago      NUMBER(8, 4),
+    monto_aprobado    NUMBER,
+    letr_mensual      NUMBER,
+    importe_pago      NUMBER,
     fecha_pago        DATE,
-    tasa_interes      NUMBER(4, 2),
+    tasa_interes      NUMBER,
     CONSTRAINT prestamos_pk PRIMARY KEY ( id_cliente,cod_tipo_prestamo ),
     CONSTRAINT prestamos_clientes_fk FOREIGN KEY ( id_cliente )
         REFERENCES clientes ( id_cliente ),

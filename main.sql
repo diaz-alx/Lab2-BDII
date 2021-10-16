@@ -1,20 +1,20 @@
 
 CREATE TABLE tipos_correos (
     cod_correo  NUMBER NOT NULL,
-    descripcion VARCHAR2(50),
+    descripcion VARCHAR2(100),
     CONSTRAINT tipos_correos_pk PRIMARY KEY ( cod_correo )
 );
 
 CREATE TABLE tipos_prestamos (
     cod_prestamo    NUMBER NOT NULL,
-    nombre_prestamo VARCHAR2(45) NOT NULL,
+    nombre_prestamo VARCHAR2(100) NOT NULL,
     tasa_interes    NUMBER(2, 2) DEFAULT 0,
     CONSTRAINT tipos_prestamos_pk PRIMARY KEY ( cod_prestamo )
 );
 
 CREATE TABLE tipos_telefonos (
     cod_telefono NUMBER NOT NULL,
-    descripcion  VARCHAR2(50),
+    descripcion  VARCHAR2(100),
     CONSTRAINT tipos_telefonos_pk PRIMARY KEY ( cod_telefono )
 );
 
@@ -26,14 +26,14 @@ CREATE TABLE profesiones (
 
 CREATE TABLE distritos (
     cod_distrito NUMBER NOT NULL,
-    nombre       VARCHAR2(45),
+    nombre       VARCHAR2(100),
     CONSTRAINT distritos_pk PRIMARY KEY ( cod_distrito )
 );
 
 
 CREATE TABLE provincias (
     cod_provincia NUMBER NOT NULL,
-    nombre        VARCHAR2(45),
+    nombre        VARCHAR2(100),
     CONSTRAINT provincias_pk PRIMARY KEY ( cod_provincia )
 );
 
@@ -61,8 +61,8 @@ CREATE TABLE sucursales (
 CREATE TABLE clientes (
     id_cliente    NUMBER NOT NULL,
     cedula        VARCHAR2(10) NOT NULL,
-    nombre1       VARCHAR2(45) not NULL,
-    apellido1     VARCHAR2(45) not NULL,
+    nombre1       VARCHAR2(100) not NULL,
+    apellido1     VARCHAR2(100) not NULL,
     fecha_nac     DATE not NULL,
     edad          NUMBER,
     sexo          CHAR NOT NULL,
@@ -123,12 +123,12 @@ CREATE TABLE prestamos (
     id_cliente        NUMBER NOT NULL,
     cod_tipo_prestamo NUMBER NOT NULL,
     no_prestamo       NUMBER NOT NULL,
-    fecha_aprovado    DATE,
+    fecha_aprobado    DATE,
     monto_aprobado    NUMBER(15,2) DEFAULT 0,
     letr_mensual      NUMBER(15,2) DEFAULT 0,
     importe_pago      NUMBER(15,2) DEFAULT 0,
     fecha_pago        DATE,
-    tasa_interes      NUMBER(4, 2) DEFAULT 0,
+    tasa_interes      NUMBER(2, 2) DEFAULT 0,
     saldo_acual       NUMBER(15, 2) DEFAULT 0,
     interes_pagado    NUMBER(15, 2) DEFAULT 0,
     CONSTRAINT prestamos_pk PRIMARY KEY ( id_cliente,no_prestamo ),

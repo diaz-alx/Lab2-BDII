@@ -167,12 +167,6 @@ CREATE TABLE transacpagos (
 );
 
 
-
-
-
-
-
-
 ---VISTA DE LOS PRESTAMOS--
 
 CREATE VIEW VIEW_PRESTAMOS

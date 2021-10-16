@@ -18,3 +18,4 @@ por el cliente se aplica al saldo del préstamo.
 financiera en función de esto, aplicar las actualizaciones.
 
 */
+

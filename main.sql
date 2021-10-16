@@ -2,6 +2,7 @@
 CREATE TABLE tipos_correos (
     cod_correo  NUMBER NOT NULL,
     descripcion VARCHAR2(100),
+    CONSTRAINT correo_u UNIQUE ( descripcion ),
     CONSTRAINT tipos_correos_pk PRIMARY KEY ( cod_correo )
 );
 
@@ -9,24 +10,28 @@ CREATE TABLE tipos_prestamos (
     cod_prestamo    NUMBER NOT NULL,
     nombre_prestamo VARCHAR2(100) NOT NULL,
     tasa_interes    NUMBER(2, 2) DEFAULT 0,
+    CONSTRAINT t_prestam_u UNIQUE ( nombre_prestamo ),
     CONSTRAINT tipos_prestamos_pk PRIMARY KEY ( cod_prestamo )
 );
 
 CREATE TABLE tipos_telefonos (
     cod_telefono NUMBER NOT NULL,
     descripcion  VARCHAR2(100),
+    CONSTRAINT telefonos_u UNIQUE ( descripcion ),
     CONSTRAINT tipos_telefonos_pk PRIMARY KEY ( cod_telefono )
 );
 
 CREATE TABLE profesiones (
     id_profesion NUMBER NOT NULL,
     descripcion  VARCHAR2(100),
+    CONSTRAINT profesion_u UNIQUE ( descripcion ),
     CONSTRAINT profesion_pk PRIMARY KEY ( id_profesion )
 );
 
 CREATE TABLE distritos (
     cod_distrito NUMBER NOT NULL,
     nombre       VARCHAR2(100),
+    CONSTRAINT distrito_u UNIQUE ( NOMBRE ),
     CONSTRAINT distritos_pk PRIMARY KEY ( cod_distrito )
 );
 
@@ -34,6 +39,7 @@ CREATE TABLE distritos (
 CREATE TABLE provincias (
     cod_provincia NUMBER NOT NULL,
     nombre        VARCHAR2(100),
+    CONSTRAINT provincia_u UNIQUE ( nombre ),
     CONSTRAINT provincias_pk PRIMARY KEY ( cod_provincia )
 );
 

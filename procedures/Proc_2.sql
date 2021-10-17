@@ -4,19 +4,20 @@ información correspondiente. Este procedimiento debe invocar una Función que
 calcule la edad de los clientes.
 */
 
-CREATE OR REPLACE FUNCTION calcularEdadCliente( P_fecha date)
+CREATE OR REPLACE FUNCTION calcularEdadCliente(p_fecha date)
 RETURN NUMBER IS 
-clienteEdad number(3)
+v_clienteEdad number(3);
+v_fecha date := p_fecha;
 BEGIN
   -- Necesitamos eso en años
-  clienteEdad = (SYSDATE - p_fecha) / 365;
+  v_clienteEdad := (SYSDATE - v_fecha) / 365;
 
-  RETURN clienteEdad;
+  RETURN v_clienteEdad;
   
   EXCEPTION
-   WHEN DUP_VAL_ON_INDEX THEN
+   WHEN ZERO_DIVIDE THEN
        DBMS_OUTPUT.PUT_LINE('💣 Error: El tipo de correo ya existe.');
-END;
+END calcularEdadCliente;
 /
 
 
@@ -29,7 +30,7 @@ CREATE OR REPLACE PROCEDURE insertCliente(
     p_Sexo      IN clientes.sexo%TYPE,
     p_calle     IN clientes.calle%TYPE,
     p_profesion IN clientes.cod_profesion%TYPE,
-    p_provincia IN clientes.cod_provincia%TYPE,
+    p_direccion IN clientes.direccion%TYPE,
     p_sucursal  IN clientes.cod_sucursal%TYPE,
 ) IS 
 intSeqVal number(10);
@@ -45,8 +46,7 @@ INSERT into CLIENTES (id_cliente,
     edad,
     sexo,
     cod_profesion,
-    cod_provincia,
-    calle,
+    direccion,
     cod_sucursal)
 VALUES (intSeqVal,
     p_cedula,
@@ -56,15 +56,13 @@ VALUES (intSeqVal,
     v_edad,
     p_sexo,
     p_profesion,
-    p_provincia,
-    p_calle,
+    p_direccion,
     p_sucursal);
     COMMIT;
 EXCEPTION
    WHEN DUP_VAL_ON_INDEX THEN
-       DBMS_OUTPUT.PUT_LINE('💣 Error: El tipo de correo ya existe.');
+       DBMS_OUTPUT.PUT_LINE('💣 Error: El cliente ya existe.');
 END;
-
 /
 
 --PARAMETROS: 'lacedula','nombre','apellido','fecha','sexo(M,F)',profesion,provincia,'calle',sucursal

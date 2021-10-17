@@ -55,13 +55,10 @@ CREATE TABLE provincias_distritos (
 
 CREATE TABLE sucursales (
     cod_sucursal   NUMBER NOT NULL,
-    nombresucursal VARCHAR2(50) NOT NULL,
-    tipoprestamo   NUMBER NOT NULL,
+    nombre VARCHAR2(50) NOT NULL,
     monto_prestamo NUMBER(15, 2) DEFAULT 0,
     CONSTRAINT sucursales_pk PRIMARY KEY ( cod_sucursal ),
-    CONSTRAINT sucursales__un UNIQUE ( nombresucursal ),
-    CONSTRAINT sucursales_tipos_prestamos_fk FOREIGN KEY ( tipoprestamo )
-        REFERENCES tipos_prestamos ( cod_prestamo )
+    CONSTRAINT sucursales_un UNIQUE ( nombre )
 );
 
 CREATE TABLE clientes (
@@ -70,19 +67,16 @@ CREATE TABLE clientes (
     nombre1       VARCHAR2(100) not NULL,
     apellido1     VARCHAR2(100) not NULL,
     fecha_nac     DATE not NULL,
-    edad          NUMBER,
+    edad          NUMBER(3),
     sexo          CHAR NOT NULL,
     cod_profesion NUMBER NOT NULL,
-    cod_provincia NUMBER NOT NULL,
-    calle         VARCHAR2(50) not NULL,
+    direccion     VARCHAR2(250) not NULL,
     cod_sucursal  NUMBER NOT NULL,
     constraint c_sexo CHECK (sexo in ('F','M')),
-    CONSTRAINT clientes__un UNIQUE ( cedula ),
+    CONSTRAINT clientes_un UNIQUE ( cedula ),
     CONSTRAINT clientes_pk PRIMARY KEY ( id_cliente ),
     CONSTRAINT clientes_profesion_fk FOREIGN KEY ( cod_profesion )
         REFERENCES profesiones ( id_profesion ),
-    CONSTRAINT clientes_provincias_fk FOREIGN KEY ( cod_provincia )
-        REFERENCES provincias ( cod_provincia ),
     CONSTRAINT clientes_sucursales_fk FOREIGN KEY ( cod_sucursal )
         REFERENCES sucursales ( cod_sucursal )
 );
@@ -131,38 +125,33 @@ CREATE TABLE prestamos (
     no_prestamo       NUMBER NOT NULL,
     fecha_aprobado    DATE,
     monto_aprobado    NUMBER(15,2) DEFAULT 0,
-    letr_mensual      NUMBER(15,2) DEFAULT 0,
+    letra_mensual      NUMBER(15,2) DEFAULT 0,
     importe_pago      NUMBER(15,2) DEFAULT 0,
     fecha_pago        DATE,
     tasa_interes      NUMBER(2, 2) DEFAULT 0,
     saldo_acual       NUMBER(15, 2) DEFAULT 0,
     interes_pagado    NUMBER(15, 2) DEFAULT 0,
-    CONSTRAINT prestamos_pk PRIMARY KEY ( id_cliente,no_prestamo ),
+    CONSTRAINT prestamos_pk PRIMARY KEY ( id_cliente,cod_tipo_prestamo ),
     CONSTRAINT prestamos_clientes_fk FOREIGN KEY ( id_cliente )
         REFERENCES clientes ( id_cliente ),
-    CONSTRAINT prestamos_tipos_prestamos_fk FOREIGN KEY ( cod_tipo_prestamo )
+    CONSTRAINT tipos_presta_fk FOREIGN KEY ( cod_tipo_prestamo )
         REFERENCES tipos_prestamos ( cod_prestamo )
 );
 
 
 CREATE TABLE transacpagos (
     id_transaccion   NUMBER NOT NULL,
-    cod_sucursal     NUMBER NOT NULL,
-    no_prestamo      NUMBER NOT NULL,
+    id_cliente     NUMBER NOT NULL,
     tipo_prestamo    NUMBER NOT NULL,
-    id_cliente       NUMBER NOT NULL,
+    cod_sucursal       NUMBER NOT NULL,
     fecha_transac    DATE,
     monto_pago       NUMBER(15, 2) DEFAULT 0,
     fecha_inserccion DATE,
     usuario          VARCHAR2(45),
     CONSTRAINT transacpagos_pk PRIMARY KEY ( id_transaccion ),
-    CONSTRAINT transac_tipos_prestamos_fk FOREIGN KEY ( tipo_prestamo )
-        REFERENCES tipos_prestamos ( cod_prestamo ),
-    CONSTRAINT transacpagos_clientes_fk FOREIGN KEY ( id_cliente )
-        REFERENCES clientes ( id_cliente ),
-    CONSTRAINT transacpagos_prestamos_fk FOREIGN KEY ( id_cliente,no_prestamo )
-        REFERENCES prestamos ( id_cliente,no_prestamo ),
-    CONSTRAINT transacpagos_sucursales_fk FOREIGN KEY ( cod_sucursal )
+    CONSTRAINT transacpagos_prestamos_fk FOREIGN KEY ( id_cliente,tipo_prestamo )
+        REFERENCES prestamos ( id_cliente,cod_tipo_prestamo ),
+    CONSTRAINT transac_sucursales_fk FOREIGN KEY ( cod_sucursal )
         REFERENCES sucursales ( cod_sucursal )
 );
 

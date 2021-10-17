@@ -22,19 +22,18 @@ END calcularEdadCliente;
 
 
 CREATE OR REPLACE PROCEDURE insertCliente(
+    p_cedula    IN clientes.cedula%TYPE,
     p_Nombre    IN clientes.nombre1%TYPE,
     p_Apellido  IN clientes.apellido1%TYPE,
-    p_cedula    IN clientes.cedula%TYPE,
-    p_sexo      IN Clientes.SEXO%TYPE,
     p_fecha     IN clientes.fecha_nac%TYPE,
-    p_Sexo      IN clientes.sexo%TYPE,
-    p_calle     IN clientes.calle%TYPE,
+    p_sexo      IN Clientes.SEXO%TYPE,
     p_profesion IN clientes.cod_profesion%TYPE,
     p_direccion IN clientes.direccion%TYPE,
-    p_sucursal  IN clientes.cod_sucursal%TYPE,
-) IS 
-intSeqVal number(10);
-v_edad number(3) := calcularEdadCliente(p_fecha);
+    p_sucursal  IN clientes.cod_sucursal%TYPE) 
+
+IS 
+    intSeqVal number(10);
+    v_edad number(3) := calcularEdadCliente(p_fecha);
 
 BEGIN
     select SEC_ID_cliente.nextval into intSeqVal from dual;
@@ -62,13 +61,13 @@ VALUES (intSeqVal,
 EXCEPTION
    WHEN DUP_VAL_ON_INDEX THEN
        DBMS_OUTPUT.PUT_LINE('💣 Error: El cliente ya existe.');
-END;
+END insertCliente;
 /
 
 --PARAMETROS: 'lacedula','nombre','apellido','fecha','sexo(M,F)',profesion,provincia,'calle',sucursal
 -- Execute insertCliente('lacedula','nombre','apellido','fecha','sexo(M,F)',profesion,provincia,'calle',sucursal);
 
-Execute insertCliente(8977, '800-99-123','JUAN','ZELAYA', TO_DATE('16-01-1995','DD-MM-YYYY'),'M',10,8,'La Locería calle 5 ');
+Execute insertCliente('800-99-123','JUAN','ZELAYA','16-jan-1995','M',1,'La Locería calle 5',1);
 Execute insertCliente(9010, '800-99-124','KREVITH','SHAW', TO_DATE('20-08-1981','DD-MM-YYYY'),'M',20,8,'La Gloria, Bethania, cl 19cN, ca 37');
 Execute insertCliente(9067, '800-99-125','BORIS','FLORES', TO_DATE('15-09-1992','DD-MM-YYYY'),'M',30,8,'Plaza Camino de Cruces El Dorado');
 Execute insertCliente(9173, '800-99-126','SERGIO','ROJAS', TO_DATE('25-05-1993','DD-MM-YYYY'),'M',40,8,'San francisco calle 70');

@@ -53,7 +53,7 @@ CREATE or REPLACE PROCEDURE Nuevo_tipoprofesion(
 IS
 intSeqVal number(10);
 BEGIN
-    select sec_cod_profesion.nextval into intSeqVal from dual;
+    select sec_id_profesion.nextval into intSeqVal from dual;
     INSERT into PROFESIONES(id_profesion,descripcion)
     VALUES (intSeqVal,p_profesion);
     COMMIT;
@@ -110,29 +110,4 @@ EXCEPTION
    WHEN DUP_VAL_ON_INDEX THEN
        DBMS_OUTPUT.PUT_LINE('💣 Error: La sucursal ya existe.');
 END NuevaSucursal;
-/
-
-
-DECLARE
--- Declaración de las variables 
-nom_ciudad varchar(25);
-BEGIN
--- Sentencia para captura 
-nom_ciudad:= '&ciudad';
-dbms_output.put_line('Nombre del equipo:');
--- Inicio del case 
-    CASE nom_ciudad
-    when 'Madrid' then
-    dbms_output.put_line('Real Madrid CF');
-    when 'Valencia' then
-    dbms_output.put_line('Valencia CF');
-    when 'Barcelona' then
-    dbms_output.put_line('FC Barcelona');
-    else
-    dbms_output.put_line('Ciudad errónea');
-END CASE;
-EXCEPTION
-when no_data_found then
-dbms_output.put_line('Error. No se insertó ningún dato');
-END;
 /

@@ -11,7 +11,7 @@ BEGIN
 EXCEPTION
    WHEN DUP_VAL_ON_INDEX THEN
        DBMS_OUTPUT.PUT_LINE('💣 Error: El tipo de correo ya existe.');
-END;
+END Nuevo_tipoCorreo;
 /
 
 --TIPOS PRESTAMOS
@@ -28,7 +28,7 @@ BEGIN
 EXCEPTION
    WHEN DUP_VAL_ON_INDEX THEN
        DBMS_OUTPUT.PUT_LINE('💣 Error: El tipo de prestamo ya existe.');
-END;
+END Nuevo_tipoPrestamo;
 /
 
 --TIPOS telefonos
@@ -44,7 +44,7 @@ BEGIN
 EXCEPTION
    WHEN DUP_VAL_ON_INDEX THEN
        DBMS_OUTPUT.PUT_LINE('💣 Error: El tipo de telefono ya existe.');
-END;
+END Nuevo_tipotelefonos;
 /
 
 --TIPOS profesion
@@ -53,69 +53,61 @@ CREATE or REPLACE PROCEDURE Nuevo_tipoprofesion(
 IS
 intSeqVal number(10);
 BEGIN
-    select sec_cod_profesion.nextval into intSeqVal from dual;
+    select sec_id_profesion.nextval into intSeqVal from dual;
     INSERT into PROFESIONES(id_profesion,descripcion)
     VALUES (intSeqVal,p_profesion);
     COMMIT;
 EXCEPTION
    WHEN DUP_VAL_ON_INDEX THEN
        DBMS_OUTPUT.PUT_LINE('💣 Error: La profesion ya existe.');
-END;
+END Nuevo_tipoprofesion;
 /
 
 --Distritos
-CREATE or REPLACE PROCEDURE Nuevo_distrito(
-    p_profesion    IN profesiones.descripcion%TYPE)
+CREATE or REPLACE PROCEDURE NuevoDistrito(
+    p_distrito    IN distritos.nombre%TYPE)
 IS
 intSeqVal number(10);
 BEGIN
-    select sec_cod_profesion.nextval into intSeqVal from dual;
-    INSERT into PROFESIONES(id_profesion,descripcion)
-    VALUES (intSeqVal,p_profesion);
+    select sec_cod_distrito.nextval into intSeqVal from dual;
+    INSERT into DISTRITOS(cod_distrito,nombre)
+    VALUES (intSeqVal,p_distrito);
     COMMIT;
 EXCEPTION
    WHEN DUP_VAL_ON_INDEX THEN
-       DBMS_OUTPUT.PUT_LINE('💣 Error: La profesion ya existe.');
-END;
+       DBMS_OUTPUT.PUT_LINE('💣 Error: El distrito ya existe.');
+END NuevoDistrito;
 /
 
 --Provincias
-CREATE or REPLACE PROCEDURE Nuevo_tipoprofesion(
-    p_profesion    IN profesiones.descripcion%TYPE)
+CREATE or REPLACE PROCEDURE NuevaProvincia(
+    p_provincia    IN provincias.nombre%TYPE)
 IS
 intSeqVal number(10);
 BEGIN
-    select sec_cod_profesion.nextval into intSeqVal from dual;
-    INSERT into PROFESIONES(id_profesion,descripcion)
-    VALUES (intSeqVal,p_profesion);
+    select sec_cod_provincia.nextval into intSeqVal from dual;
+    INSERT into PROVINCIAS(cod_provincia,nombre)
+    VALUES (intSeqVal,p_provincia);
     COMMIT;
 EXCEPTION
    WHEN DUP_VAL_ON_INDEX THEN
-       DBMS_OUTPUT.PUT_LINE('💣 Error: La profesion ya existe.');
-END;
+       DBMS_OUTPUT.PUT_LINE('💣 Error: La provincia ya existe.');
+END NuevaProvincia;
 /
 
-CREATE or REPLACE PROCEDURE insertNewColab(
-    p_Nombre_Colab    IN colaboradores.nombre%TYPE,
-    p_Apellido_Colab  IN colaboradores.apellido%TYPE,
-    p_cedula_colab    IN colaboradores.cedula%TYPE,
-    p_sexo_colab      IN COLABORADORES.SEXO%TYPE,
-    p_fecha_nac       IN colaboradores.fecha_nacimiento%TYPE,
-    p_Status_colab    IN colaboradores.status%TYPE,
-    p_SalarioM_Colab  IN colaboradores.salario_mensual%TYPE)
+--sucursales
+CREATE or REPLACE PROCEDURE NuevaSucursal(
+    p_sucursal    IN SUCURSALES.nombre%TYPE,
+    p_monto_pre   IN SUCURSALES.MONTO_PRESTAMO%TYPE)
 IS
 intSeqVal number(10);
-v_fechaIn date;
 BEGIN
-    select SEC_ID_COLABORADOR.nextval into intSeqVal from dual;
-    select SYSDATE into v_fechaIn from DUAL;
-    INSERT into COLABORADORES (id_codcolaborador,nombre,apellido,cedula,sexo,
-            fecha_nacimiento,fecha_ingreso,status,salario_mensual)
-    VALUES (intSeqVal, p_Nombre_Colab, p_Apellido_Colab, p_cedula_colab, p_sexo_colab,
-            to_date(p_fecha_nac,'DD-MON-YY'),v_fechaIn, p_Status_colab, p_SalarioM_Colab);
+    select sec_cod_sucursal.nextval into intSeqVal from dual;
+    INSERT into SUCURSALES(COD_SUCURSAL,nombre,MONTO_PRESTAMO)
+    VALUES (intSeqVal,p_sucursal,p_monto_pre);
     COMMIT;
 EXCEPTION
    WHEN DUP_VAL_ON_INDEX THEN
-       DBMS_OUTPUT.PUT_LINE('💣 Error: El usuario ya existe la tabla de colaboradores');
-END;
+       DBMS_OUTPUT.PUT_LINE('💣 Error: La sucursal ya existe.');
+END NuevaSucursal;
 /

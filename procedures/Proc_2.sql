@@ -70,15 +70,15 @@ END;
 --PARAMETROS: 'lacedula','nombre','apellido','fecha','sexo(M,F)',profesion,provincia,'calle',sucursal
 -- Execute insertCliente('lacedula','nombre','apellido','fecha','sexo(M,F)',profesion,provincia,'calle',sucursal);
 
-Execute insertCliente(8977, '800-99-123','JUAN','ZELAYA', TO_DATE('16-01-1995','DD-MM-YYYY'),'M',10,8,'La Locería calle 5 ');
-Execute insertCliente(9010, '800-99-124','KREVITH','SHAW', TO_DATE('20-08-1981','DD-MM-YYYY'),'M',20,8,'La Gloria, Bethania, cl 19cN, ca 37');
-Execute insertCliente(9067, '800-99-125','BORIS','FLORES', TO_DATE('15-09-1992','DD-MM-YYYY'),'M',30,8,'Plaza Camino de Cruces El Dorado');
-Execute insertCliente(9173, '800-99-126','SERGIO','ROJAS', TO_DATE('25-05-1993','DD-MM-YYYY'),'M',40,8,'San francisco calle 70');
-Execute insertCliente(9208, '800-99-127','RANDALL','WAYNE', TO_DATE('13-04-1998','DD-MM-YYYY'),'M',50,8,'Obarrio, Calle 56 Este, Edificio Enid,');
-Execute insertCliente(9235, '800-99-128','JORGE','MOLINA', TO_DATE('17-07-1987','DD-MM-YYYY'),'M',60,8,'PH Edison Corporate Center Piso 8.');
-Execute insertCliente(9248, '800-99-129','SEBASTIAN','GONZALEZ', TO_DATE('27-12-1991','DD-MM-YYYY'),'M',70,8,'Calle 109 Este, entrada de Chanis');
-Execute insertCliente(9251, '800-99-130','ANTONIO','FALLAS', TO_DATE('12-06-1957','DD-MM-YYYY'),'M',80,8,'Calle D El Cangrejo y Eusebio A Morales.');
-Execute insertCliente(9274, '800-99-131','JOSE','FALLAS', TO_DATE('09-02-2000','DD-MM-YYYY'),'M',90,8,'Calle Williamson Place, La Boca, Ancón');
-Execute insertCliente(9333, '800-99-132','PATRICIA','CENTENO', TO_DATE('16-01-1995','DD-MM-YYYY'),'F',100,8,'Calle 53 El Cangrejo');
+Execute insertCliente('800-99-123','JUAN','ZELAYA', TO_DATE('16-01-1995','DD-MM-YYYY'),'M',10,8,'La Locería calle 5 ');
+Execute insertCliente('800-99-124','KREVITH','SHAW', TO_DATE('20-08-1981','DD-MM-YYYY'),'M',20,8,'La Gloria, Bethania, cl 19cN, ca 37');
+Execute insertCliente('800-99-125','BORIS','FLORES', TO_DATE('15-09-1992','DD-MM-YYYY'),'M',30,8,'Plaza Camino de Cruces El Dorado');
+Execute insertCliente('800-99-126','SERGIO','ROJAS', TO_DATE('25-05-1993','DD-MM-YYYY'),'M',40,8,'San francisco calle 70');
+Execute insertCliente('800-99-127','RANDALL','WAYNE', TO_DATE('13-04-1998','DD-MM-YYYY'),'M',50,8,'Obarrio, Calle 56 Este, Edificio Enid,');
+Execute insertCliente('800-99-128','JORGE','MOLINA', TO_DATE('17-07-1987','DD-MM-YYYY'),'M',60,8,'PH Edison Corporate Center Piso 8.');
+Execute insertCliente('800-99-129','SEBASTIAN','GONZALEZ', TO_DATE('27-12-1991','DD-MM-YYYY'),'M',70,8,'Calle 109 Este, entrada de Chanis');
+Execute insertCliente('800-99-130','ANTONIO','FALLAS', TO_DATE('12-06-1957','DD-MM-YYYY'),'M',80,8,'Calle D El Cangrejo y Eusebio A Morales.');
+Execute insertCliente('800-99-131','JOSE','FALLAS', TO_DATE('09-02-2000','DD-MM-YYYY'),'M',90,8,'Calle Williamson Place, La Boca, Ancón');
+Execute insertCliente('800-99-132','PATRICIA','CENTENO', TO_DATE('16-01-1995','DD-MM-YYYY'),'F',100,8,'Calle 53 El Cangrejo');
 
 

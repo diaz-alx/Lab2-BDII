@@ -26,7 +26,7 @@ CREATE OR REPLACE PROCEDURE insertCliente(
     p_Nombre    IN clientes.nombre1%TYPE,
     p_Apellido  IN clientes.apellido1%TYPE,
     p_fecha     IN clientes.fecha_nac%TYPE,
-    p_sexo      IN Clientes.SEXO%TYPE,
+    p_sexo      IN clientes.SEXO%TYPE,
     p_profesion IN clientes.cod_profesion%TYPE,
     p_direccion IN clientes.direccion%TYPE,
     p_sucursal  IN clientes.cod_sucursal%TYPE) 
@@ -34,7 +34,6 @@ CREATE OR REPLACE PROCEDURE insertCliente(
 IS 
     intSeqVal number(10);
     v_edad number(3) := calcularEdadCliente(p_fecha);
-
 BEGIN
     select SEC_ID_cliente.nextval into intSeqVal from dual;
 INSERT into CLIENTES (id_cliente,
@@ -46,7 +45,7 @@ INSERT into CLIENTES (id_cliente,
     sexo,
     cod_profesion,
     direccion,
-    cod_sucursal)
+    cod_sucursal);
 VALUES (intSeqVal,
     p_cedula,
     p_nombre,

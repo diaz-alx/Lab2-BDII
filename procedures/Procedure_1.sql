@@ -102,7 +102,6 @@ IS
 intSeqVal number(10);
 v_sucursal VARCHAR2(100) := p_sucursal;
 v_monto number := 0;
---v_counter NUMBER := 1;
 BEGIN
 
 select sec_cod_sucursal.nextval into intSeqVal from dual;
@@ -117,15 +116,14 @@ FOR v_counter IN 1..5 LOOP
     INSERT INTO TIPOS_PRE_SUCURSAL(
         COD_SUCURSAL,
         COD_T_PRESTAM,
-        FECHA_UP)
-        --fecha_mod)
+        monto_prestamo,
+        fecha_mod)
      VALUES(
         intSeqVal,
         v_counter,
-        --v_monto
+        v_monto,
         to_date(sysdate,'DD-MM-YY')
     );
-    --v_counter := v_counter+1;
     COMMIT;
     END LOOP;
     

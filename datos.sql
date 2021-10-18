@@ -1,3 +1,4 @@
+
     ---TIPOS_CORREOS--
     EXECUTE Nuevo_tipoCorreo('Personal');
     EXECUTE Nuevo_tipoCorreo('Profesional');
@@ -17,10 +18,10 @@
     EXECUTE Nuevo_tipoPrestamo('Garantizado con Ahorros', 0.04);
 
     --SUCURSALES
-    EXECUTE NuevaSucursal('Primera',10000000);
-    EXECUTE NuevaSucursal('Segunda',20000000);
-    EXECUTE NuevaSucursal('Tercera',1000000);
-    EXECUTE NuevaSucursal('Cuarta',5000000);
+    EXECUTE NuevaSucursal('Primera',0);
+    EXECUTE NuevaSucursal('Segunda',0);
+    EXECUTE NuevaSucursal('Tercera',0);
+    EXECUTE NuevaSucursal('Cuarta',0);
 
    --PROVINCIAS--
 

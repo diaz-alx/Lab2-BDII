@@ -1,63 +1,66 @@
-    --PROVINCIAS--
-
-    INSERT INTO PROVINCIAS VALUES (1, 'Bocas del Toro');
-    INSERT INTO PROVINCIAS VALUES (2, 'Coclé');
-    INSERT INTO PROVINCIAS VALUES (3, 'Colón');
-    INSERT INTO PROVINCIAS VALUES (4, 'Chiriquí');
-    INSERT INTO PROVINCIAS VALUES (5, 'Darién');
-    INSERT INTO PROVINCIAS VALUES (6, 'Herrera');
-    INSERT INTO PROVINCIAS VALUES (7, 'Los Santos');
-    INSERT INTO PROVINCIAS VALUES (8, 'Panamá');
-    INSERT INTO PROVINCIAS VALUES (9, 'Veraguas');
-    INSERT INTO PROVINCIAS VALUES (13, 'Panamá Oeste');
-
-
-    --PROFESIONES--
-    INSERT INTO PROFESIONES VALUES (10, 'Profesor');
-    INSERT INTO PROFESIONES VALUES (20, 'Dentista');
-    INSERT INTO PROFESIONES VALUES (30, 'Policia');
-    INSERT INTO PROFESIONES VALUES (40, 'Bombero');
-    INSERT INTO PROFESIONES VALUES (50, 'Enfermero');
-    INSERT INTO PROFESIONES VALUES (60, 'Arquictecto');
-    INSERT INTO PROFESIONES VALUES (70, 'Abogado');
-    INSERT INTO PROFESIONES VALUES (80, 'Contador');
-    INSERT INTO PROFESIONES VALUES (90, 'Químico');
-    INSERT INTO PROFESIONES VALUES (100, 'Reportero');
-
-    ---clientes--
-
-    INSERT INTO CLIENTES VALUES (8977, '800-99-123','JUAN','ZELAYA', TO_DATE('16-01-1995','DD-MM-YYYY'),'M',10,8,'La Locería calle 5 ');
-    INSERT INTO CLIENTES VALUES (9010, '800-99-124','KREVITH','SHAW', TO_DATE('20-08-1981','DD-MM-YYYY'),'M',20,8,'La Gloria, Bethania, cl 19cN, ca 37');
-    INSERT INTO CLIENTES VALUES (9067, '800-99-125','BORIS','FLORES', TO_DATE('15-09-1992','DD-MM-YYYY'),'M',30,8,'Plaza Camino de Cruces El Dorado');
-    INSERT INTO CLIENTES VALUES (9173, '800-99-126','SERGIO','ROJAS', TO_DATE('25-05-1993','DD-MM-YYYY'),'M',40,8,'San francisco calle 70');
-    INSERT INTO CLIENTES VALUES (9208, '800-99-127','RANDALL','WAYNE', TO_DATE('13-04-1998','DD-MM-YYYY'),'M',50,8,'Obarrio, Calle 56 Este, Edificio Enid,');
-    INSERT INTO CLIENTES VALUES (9235, '800-99-128','JORGE','MOLINA', TO_DATE('17-07-1987','DD-MM-YYYY'),'M',60,8,'PH Edison Corporate Center Piso 8.');
-    INSERT INTO CLIENTES VALUES (9248, '800-99-129','SEBASTIAN','GONZALEZ', TO_DATE('27-12-1991','DD-MM-YYYY'),'M',70,8,'Calle 109 Este, entrada de Chanis');
-    INSERT INTO CLIENTES VALUES (9251, '800-99-130','ANTONIO','FALLAS', TO_DATE('12-06-1957','DD-MM-YYYY'),'M',80,8,'Calle D El Cangrejo y Eusebio A Morales.');
-    INSERT INTO CLIENTES VALUES (9274, '800-99-131','JOSE','FALLAS', TO_DATE('09-02-2000','DD-MM-YYYY'),'M',90,8,'Calle Williamson Place, La Boca, Ancón');
-    INSERT INTO CLIENTES VALUES (9333, '800-99-132','PATRICIA','CENTENO', TO_DATE('16-01-1995','DD-MM-YYYY'),'F',100,8,'Calle 53 El Cangrejo');
-
-
-
     ---TIPOS_CORREOS--
-    INSERT INTO TIPOS_CORREOS VALUES (1, 'Personal');
-    INSERT INTO TIPOS_CORREOS VALUES (2, 'Profesional');
-    INSERT INTO TIPOS_CORREOS VALUES (3, 'Academico');
+    EXECUTE Nuevo_tipoCorreo('Personal');
+    EXECUTE Nuevo_tipoCorreo('Profesional');
+    EXECUTE Nuevo_tipoCorreo('Academico');
 
     --TIPOS_TELEFONOS--
-    INSERT INTO TIPOS_TELEFONOS VALUES (10, 'celular');
-    INSERT INTO TIPOS_TELEFONOS VALUES (20, 'residencia');
-    INSERT INTO TIPOS_TELEFONOS VALUES (30, 'familiar');
-    INSERT INTO TIPOS_TELEFONOS VALUES (40, 'conyugue');
+    EXECUTE Nuevo_tipotelefonos('Celular');
+    EXECUTE Nuevo_tipotelefonos('Residencia');
+    EXECUTE Nuevo_tipotelefonos('Familiar');
+    EXECUTE Nuevo_tipotelefonos('Conyugue');
 
     --TIPOS_PRESTAMOS--
-    INSERT INTO TIPOS_PRESTAMOS VALUES (1, 'Hipoteca', 5);
-    INSERT INTO TIPOS_PRESTAMOS VALUES (2, 'Personal', 6);
-    INSERT INTO TIPOS_PRESTAMOS VALUES (3, 'CasaCash', 2);
-    INSERT INTO TIPOS_PRESTAMOS VALUES (4, 'Auto', 3);
-    INSERT INTO TIPOS_PRESTAMOS VALUES (5, 'Garantizado con Ahorros', 4);
+    EXECUTE Nuevo_tipoPrestamo('Hipoteca', 0.05);
+    EXECUTE Nuevo_tipoPrestamo('Personal', 0.06);
+    EXECUTE Nuevo_tipoPrestamo('CasaCash', 0.02);
+    EXECUTE Nuevo_tipoPrestamo('Auto', 0.03);
+    EXECUTE Nuevo_tipoPrestamo('Garantizado con Ahorros', 0.04);
 
-    --PRESTAMOS--
+    --SUCURSALES
+    EXECUTE NuevaSucursal('Primera',10000000);
+    EXECUTE NuevaSucursal('Segunda',20000000);
+    EXECUTE NuevaSucursal('Tercera',1000000);
+    EXECUTE NuevaSucursal('Cuarta',5000000);
+
+   --PROVINCIAS--
+
+    execute NuevaProvincia('Bocas del Toro');
+    execute NuevaProvincia('Coclé');
+    execute NuevaProvincia('Colón');
+    execute NuevaProvincia('Chiriquí');
+    execute NuevaProvincia('Darién');
+    execute NuevaProvincia('Herrera');
+    execute NuevaProvincia('Los Santos');
+    execute NuevaProvincia('Panamá');
+    execute NuevaProvincia('Veraguas');
+    execute NuevaProvincia('Panamá Oeste');
+
+    --PROFESIONES--
+    execute Nuevo_tipoprofesion('Profesor');
+    execute Nuevo_tipoprofesion('Dentista');
+    execute Nuevo_tipoprofesion('Policia');
+    execute Nuevo_tipoprofesion('Bombero');
+    execute Nuevo_tipoprofesion('Enfermero');
+    execute Nuevo_tipoprofesion('Arquictecto');
+    execute Nuevo_tipoprofesion('Abogado');
+    execute Nuevo_tipoprofesion('Contador');
+    execute Nuevo_tipoprofesion('Químico');
+    execute Nuevo_tipoprofesion('Reportero');
+
+    ---CLIENTES
+    execute insertCliente('800-99-123','JUAN','ZELAYA','16-01-1995','M',1,'La Locería calle 5', 1);
+    execute insertCliente('800-99-124','KREVITH','SHAW','20-08-1981','M',2,'La Gloria, Bethania, cl 19cN, ca 37', 2);
+    execute insertCliente('800-99-125','BORIS','FLORES','15-09-1992','M',3,'Plaza Camino de Cruces El Dorado', 3);
+    execute insertCliente('800-99-126','SERGIO','ROJAS','25-05-1993','M',4,'San francisco calle 70', 4);
+    execute insertCliente('800-99-127','RANDALL','WAYNE','13-04-1998','M',5,'Obarrio, Calle 56 Este, Edificio Enid', 1);
+    execute insertCliente('800-99-128','JORGE','MOLINA','17-07-1987','M',6,'PH Edison Corporate Center Piso 8.', 2);
+    execute insertCliente('800-99-129','SEBASTIAN','GONZALEZ','27-12-1991','M',7,'Calle 109 Este, entrada de Chanis', 3);
+    execute insertCliente('800-99-130','ANTONIO','FALLAS','12-06-1957','M',8,'Calle D El Cangrejo y Eusebio A Morales.', 4);
+    execute insertCliente('800-99-131','JOSE','FALLAS','09-02-2000','M',9,'Calle Williamson Place, La Boca, Ancón', 1);
+    execute insertCliente('800-99-132','PATRICIA','CENTENO','16-01-1995','F',10,'Calle 53 El Cangrejo', 2);
+
+
+    --PRESTAMOS-- NO PRESTAMO, ID_CLIENTE,TIPO_PRESTAMO,FECHA_APROBADO, MONTO_APROBADO, LETRA_MENSUAL,
     INSERT INTO PRESTAMOS VALUES( 8977, 4,4421, TO_DATE('04-05-2021','DD-MM-YYYY'), 60000, 740, 180,TO_DATE('04-06-2021','DD-MM-YYYY'), 0.25  );
     INSERT INTO PRESTAMOS VALUES( 8977, 2,3653, TO_DATE('05-05-2021','DD-MM-YYYY'), 1500, 100, 15,TO_DATE('05-06-2021','DD-MM-YYYY'), 0.25  );
     INSERT INTO PRESTAMOS VALUES( 8977, 3,1604, TO_DATE('06-05-2021','DD-MM-YYYY'), 12000, 1333, 9,TO_DATE('06-06-2021','DD-MM-YYYY'), 0.25  );
@@ -73,7 +76,7 @@
     INSERT INTO PRESTAMOS VALUES( 9333, 1,1187, TO_DATE('16-05-2021','DD-MM-YYYY'), 9000, 1125, 8,TO_DATE('16-06-2021','DD-MM-YYYY'), 0.25  );
     INSERT INTO PRESTAMOS VALUES( 9333, 2,2789, TO_DATE('17-05-2021','DD-MM-YYYY'), 80000, 444, 180,TO_DATE('17-06-2021','DD-MM-YYYY'), 0.25  );
 
-
+/*
     --CLIENTES_CORREOS--
     INSERT INTO CLIENTES_CORREOS VALUES (8977,1,'8977JUAN1@MAIL.COM');
     INSERT INTO CLIENTES_CORREOS VALUES (8977,2,'8977JUAN2@MAIL.COM');
@@ -148,5 +151,5 @@
     INSERT INTO CLIENTES_TELEFONOS VALUES (9333, 30,'880974');
     INSERT INTO CLIENTES_TELEFONOS VALUES (9333, 40,'959884');
 
-
+*/
 

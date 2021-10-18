@@ -1,15 +1,15 @@
     --PROVINCIAS--
 
-    INSERT INTO PROVINCIAS VALUES (1, 'Bocas del Toro');
-    INSERT INTO PROVINCIAS VALUES (2, 'Coclé');
-    INSERT INTO PROVINCIAS VALUES (3, 'Colón');
-    INSERT INTO PROVINCIAS VALUES (4, 'Chiriquí');
-    INSERT INTO PROVINCIAS VALUES (5, 'Darién');
-    INSERT INTO PROVINCIAS VALUES (6, 'Herrera');
-    INSERT INTO PROVINCIAS VALUES (7, 'Los Santos');
-    INSERT INTO PROVINCIAS VALUES (8, 'Panamá');
-    INSERT INTO PROVINCIAS VALUES (9, 'Veraguas');
-    INSERT INTO PROVINCIAS VALUES (13, 'Panamá Oeste');
+    EXECUTE NuevaProvincia('Bocas del Toro');
+    EXECUTE NuevaProvincia('Coclé');
+    EXECUTE NuevaProvincia('Colón');
+    EXECUTE NuevaProvincia('Chiriquí');
+    EXECUTE NuevaProvincia('Darién');
+    EXECUTE NuevaProvincia('Herrera');
+    EXECUTE NuevaProvincia('Los Santos');
+    EXECUTE NuevaProvincia('Panamá');
+    EXECUTE NuevaProvincia('Veraguas');
+    EXECUTE NuevaProvincia('Panamá Oeste');
 
 
     --PROFESIONES--

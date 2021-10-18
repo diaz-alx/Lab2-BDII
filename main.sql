@@ -110,7 +110,8 @@ CREATE TABLE clientes_telefonos (
 CREATE TABLE tipos_pre_sucursal (
     cod_sucursal  NUMBER NOT NULL,
     cod_t_prestam NUMBER NOT NULL,
-    fecha_up      DATE,
+    monto_presta NUMBER NOT NULL,
+    fecha_mod      DATE,
     CONSTRAINT tipos_pre_sucursal_pk PRIMARY KEY ( cod_sucursal,cod_t_prestam ),
     CONSTRAINT tipos_prestamos_fk FOREIGN KEY ( cod_t_prestam )
         REFERENCES tipos_prestamos ( cod_prestamo ),

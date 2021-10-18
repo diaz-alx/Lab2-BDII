@@ -7,46 +7,50 @@ actualizar la información de préstamo en la tabla de sucursales.
 -- No se si hace falta convertir algunos campos a fech
 
 CREATE OR REPLACE PROCEDURE insertPrestamo(
-    p_no_prestamo    IN prestamos.no_prestamo%TYPE,
-    p_id_cliente IN prestamos.id_cliente%TYPE,
-    p_cod_tipo_prestamo    IN prestamos.cod_tipo_prestamo%TYPE,
-    p_fecha_aprobado  IN prestamos.fecha_aprobado%TYPE,
-    p_monto_aprobado    IN prestamos.monto_aprobado%TYPE,
-    p_letra_mensual     IN prestamos.letra_mensual%TYPE,
-    p_importe_pago IN prestamos.importe_pago%TYPE,
-    p_fecha_pago IN prestamos.fecha_pago%TYPE,
-    p_tasa_interes  IN prestamos.tasa_interes%TYPE,
-    p_saldo_acual IN prestamos.saldo_acual%TYPE,
-    p_interes_pagado IN prestamos.interes_pagado%TYPE
+    p_id_cliente            IN prestamos.id_cliente%TYPE,
+    p_cod_tipo_prestamo     IN prestamos.cod_tipo_prestamo%TYPE,
+    p_monto_aprobado        IN prestamos.monto_aprobado%TYPE,
+    p_fecha_pago            IN prestamos.fecha_pago%TYPE,
+    p_cuotas NUMBER;
+    p_no_sucursal number;
 )
 IS
-  intSeqVal number(10)
+  v_cod_prestamo NUMBER := p_cod_tipo_prestamo;
+  intSeqVal number(10);
+  v_fecha date := SYSDATE;
+  v_saldo := p_monto_aprobado;
+  v_interes NUMBER;
+  v_importe number := 0;
 BEGIN
   select sec_no_prestamo.nextval into intSeqVal from dual;
-INSERT INTO prestamos (
-  no_prestamo    
-  id_cliente
-  cod_tipo_prestamo    
-  fecha_aprobado  
-  monto_aprobado    
-  letra_mensual      
-  importe_pago 
-  fecha_pago 
-  tasa_interes 
-  saldo_acual 
-  interes_pagado  );
+  SELECT tasa_interes INTO v_interes FROM TIPOS_PRESTAMOS WHERE cod_prestamo = v_cod_prestamo;
+UPDATE TIPO
+INSERT INTO PRESTAMOS(
+  no_prestamo,    
+  id_cliente,
+  cod_tipo_prestamo,    
+  fecha_aprobado, 
+  monto_aprobado,    
+  letra_mensual,      
+  importe_pago, 
+  fecha_pago,
+  tasa_interes, 
+  saldo_acual, 
+  interes_pagado);
 VALUES (intSeqVal,
-    p_no_prestamo
-    p_id_cliente 
-    p_cod_tipo_prestamo
-    p_fecha_aprobado
-    p_monto_aprobado
-    p_letra_mensual 
-    p_importe_pago 
-    p_fecha_pago 
-    p_tasa_interes
-    p_saldo_acual 
+    p_no_prestamo,
+    p_id_cliente,
+    p_cod_tipo_prestamo,
+    v_fecha,
+    p_monto_aprobado,
+    p_letra_mensual, 
+    v_importe, 
+    p_fecha_pago, 
+    v_interes,
+    saldo, 
     p_interes_pagado);
+
+UPDATE 
 COMMIT;
 EXCEPTION
    WHEN DUP_VAL_ON_INDEX THEN

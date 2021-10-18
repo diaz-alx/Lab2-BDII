@@ -19,12 +19,13 @@ IS
   intSeqVal number(10);
   v_fecha date := SYSDATE;
   v_saldo := p_monto_aprobado;
+  v_moto_prestamo number := v_monto_prestamo+v_saldo;
   v_interes NUMBER;
   v_importe number := 0;
 BEGIN
   select sec_no_prestamo.nextval into intSeqVal from dual;
   SELECT tasa_interes INTO v_interes FROM TIPOS_PRESTAMOS WHERE cod_prestamo = v_cod_prestamo;
-UPDATE TIPO
+  
 INSERT INTO PRESTAMOS(
   no_prestamo,    
   id_cliente,
@@ -49,8 +50,12 @@ VALUES (intSeqVal,
     v_interes,
     saldo, 
     p_interes_pagado);
-
-UPDATE 
+--ACTAIZACION DE LA TABLA SUCURSALES: MONTOS
+SELECT monto_prestamo INTO v_monto_prestamo 
+    FROM TIPOS_PRE_SUCURSAL 
+    WHERE cod_sucursal = p_no_sucursal and cod_t_prestam = p_cod_tipo_prestamo; 
+UPDATE SET MONTO_PRESTAMO=v_monto_prestamo 
+  
 COMMIT;
 EXCEPTION
    WHEN DUP_VAL_ON_INDEX THEN

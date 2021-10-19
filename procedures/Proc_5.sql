@@ -1,4 +1,5 @@
 /*
+
 Procedimiento almacenado que actualice el pago recibo a los préstamos 
 correspondientes. Deberá implementar un cursor que busque los pagos insertados 
 uno a uno y los vaya actualizando en la tabla de préstamos y en la tabla sucursales.
@@ -25,7 +26,7 @@ financiera en función de esto, aplicar las actualizaciones.
 -- Implementación del cursor
 
 CURSOR Pagos IS
-    SELECT 
+    SELECT  %
 
     FROM PRESTAMOS
 */
@@ -56,14 +57,14 @@ RETURN NUMBER IS
 
 CREATE OR REPLACE FUNCTION disminuirPrestamo(
 -- TODO Falta colocar de donde saca eso, p_mont_mensual p_monto_interes y p_monto_a_pagar
-    p_monto_mensual PRESTAMOS.monto_aprobado%TYPE,
-    p_monto_interes
-    p_monto_a_pagar PRESTAMOS.tasa_interes%TYPE,
+    p_monto_mensual IN PRESTAMOS.monto_aprobado%TYPE,
+    p_monto_interes IN PRESTAMOS.interes_pagado%TYPE,
+    p_monto_a_pagar IN PRESTAMOS.importe_pago%TYPE,
 )
 RETURN NUMBER IS
    V_monto_actual NUMBER;
    v_monto_mensual NUMBER := p_monto_mensual;
-   v_monto_a_pagar NUMBER :=     p_monto_a_pagar;
+   v_monto_a_pagar NUMBER := p_monto_a_pagar;
    v_monto_interes NUMBER := p_monto_interes;
 ;
    BEGIN
@@ -94,7 +95,7 @@ BEGIN
     -- Aqui se implementaría el cursor
     CURSOR Pagos IS
     SELECT saldo_actual, monto_prestamo
-
+    UPDATE
 
     FROM p PRESTAMOS, s SUCURSALES
 

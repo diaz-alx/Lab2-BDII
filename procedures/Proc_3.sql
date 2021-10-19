@@ -23,9 +23,11 @@ IS
   v_interes NUMBER;
   v_importe number := 0;
 BEGIN
+
+--1--
   select sec_no_prestamo.nextval into intSeqVal from dual;
   SELECT tasa_interes INTO v_interes FROM TIPOS_PRESTAMOS WHERE cod_prestamo = v_cod_prestamo;
-  
+--2  
 INSERT INTO PRESTAMOS(
   no_prestamo,    
   id_cliente,
@@ -37,24 +39,29 @@ INSERT INTO PRESTAMOS(
   fecha_pago,
   tasa_interes, 
   saldo_acual, 
-  interes_pagado);
+  interes_pagado,
+  fecha_mod);
 VALUES (intSeqVal,
     p_no_prestamo,
     p_id_cliente,
     p_cod_tipo_prestamo,
-    v_fecha,
+    to_date(v_fecha,'DD-MM-YY')
     p_monto_aprobado,
     p_letra_mensual, 
     v_importe, 
-    p_fecha_pago, 
+    to_date(p_fecha_pago, 'DD-MM-YY'), 
     v_interes,
     saldo, 
     p_interes_pagado);
---ACTAIZACION DE LA TABLA SUCURSALES: MONTOS
+
+ --3   
+--ACTUALIZACION DE LA TABLA SUCURSALES: MONTOS
 SELECT monto_prestamo INTO v_monto_prestamo 
     FROM TIPOS_PRE_SUCURSAL 
     WHERE cod_sucursal = p_no_sucursal and cod_t_prestam = p_cod_tipo_prestamo; 
-UPDATE SET MONTO_PRESTAMO=v_monto_prestamo 
+
+--Actualizacion de la tabla relacion muchos a muchos de TIPO PRESTAMO Y SUCURSAL
+UPDATE SET MONTO_PRESTAMO=v_monto_prestamo+v_monto_prestamos FROM TIPOS_PRE_SUCURSAL; 
   
 COMMIT;
 EXCEPTION
@@ -63,6 +70,7 @@ EXCEPTION
 END insertPrestamo;
 /
 
+-- Fecha TO_DATE('DD-MM-YYY HH:MI:SS')
 
 EXECUTE insertPrestamo(4,4421, TO_DATE('04-05-2021','DD-MM-YYYY'), 60000, 740, 180,TO_DATE('04-06-2021','DD-MM-YYYY'), 0.25  );
 EXECUTE insertPrestamo(2,3653, TO_DATE('05-05-2021','DD-MM-YYYY'), 1500, 100, 15,TO_DATE('05-06-2021','DD-MM-YYYY'), 0.25  );

@@ -1,3 +1,5 @@
+set serveroutput on;
+
 
 CREATE TABLE tipos_correos (
     cod_correo  NUMBER NOT NULL,
@@ -132,6 +134,9 @@ CREATE TABLE prestamos (
     tasa_interes      NUMBER(2, 2) DEFAULT 0,
     saldo_acual       NUMBER(15, 2) DEFAULT 0,
     interes_pagado    NUMBER(15, 2) DEFAULT 0,
+    fecha_mod         date,
+    cod_sucursal      number,
+    usuario           varchar2(50),
     CONSTRAINT prestamos_pk PRIMARY KEY ( id_cliente,cod_tipo_prestamo ),
     CONSTRAINT prestamos_clientes_fk FOREIGN KEY ( id_cliente )
         REFERENCES clientes ( id_cliente ),

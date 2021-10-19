@@ -116,7 +116,7 @@ FOR v_counter IN 1..5 LOOP
     INSERT INTO TIPOS_PRE_SUCURSAL(
         COD_SUCURSAL,
         COD_T_PRESTAM,
-        monto_prestamo,
+        monto_presta,
         fecha_mod)
      VALUES(
         intSeqVal,

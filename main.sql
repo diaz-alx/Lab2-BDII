@@ -84,7 +84,6 @@ CREATE TABLE clientes (
 );
 
 
-
 CREATE TABLE clientes_correos (
     id_cliente NUMBER NOT NULL,
     id_correo  NUMBER NOT NULL,
@@ -130,9 +129,9 @@ CREATE TABLE prestamos (
     monto_aprobado    NUMBER(15,2) DEFAULT 0,
     letra_mensual      NUMBER(15,2) DEFAULT 0,
     importe_pago      NUMBER(15,2) DEFAULT 0,
-    fecha_pago        DATE,
+    fecha_pago        number(2),
     tasa_interes      NUMBER(2, 2) DEFAULT 0,
-    saldo_acual       NUMBER(15, 2) DEFAULT 0,
+    saldo_actual       NUMBER(15, 2) DEFAULT 0,
     interes_pagado    NUMBER(15, 2) DEFAULT 0,
     fecha_mod         date,
     cod_sucursal      number,
@@ -154,6 +153,9 @@ CREATE TABLE transacpagos (
     monto_pago       NUMBER(15, 2) DEFAULT 0,
     fecha_inserccion DATE,
     usuario          VARCHAR2(45),
+    status             char(2),
+    -- PAGADO, EN PROCESO, NO PAGADO
+    CONSTRAINT status_check CHECK(status in ('P','EP', 'NP')),
     CONSTRAINT transacpagos_pk PRIMARY KEY ( id_transaccion ),
     CONSTRAINT transacpagos_prestamos_fk FOREIGN KEY ( id_cliente,tipo_prestamo )
         REFERENCES prestamos ( id_cliente,cod_tipo_prestamo ),

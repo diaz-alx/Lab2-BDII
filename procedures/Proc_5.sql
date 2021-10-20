@@ -22,39 +22,100 @@ financiera en función de esto, aplicar las actualizaciones.
 */
 
 
-/*
--- Implementación del cursor
-
-CURSOR Pagos IS
-    SELECT  %
-
-    FROM PRESTAMOS
-*/
-
 -- Función de calcular interés
 CREATE OR REPLACE FUNCTION calcularInteres(
-    p_prestamo PRESTAMOS.monto_aprobado%TYPE,
-    p_interes PRESTAMOS.tasa_interes%TYPE,
+    p_tipoInteres number,
+    p_saldoActual number
 )
 RETURN NUMBER IS
    V_interes_calculado NUMBER;
-   v_prestamo NUMBER := p_prestamo;
-   v_interes NUMBER := p_interes;
-   BEGIN
+   v_saldo NUMBER := p_saldoActual;
+   v_interes NUMBER;
+   --v_exeption EXCEPTION;
+BEGIN
 
+    IF p_tipoInteres = 1 THEN
+    v_interes := 0.05;
+    ELSIF p_tipoInteres = 2 THEN
+    v_interes := 0.06;
+    ELSIF p_tipoInteres = 3 THEN
+    v_interes := 0.02;
+    ELSIF p_tipoInteres = 4 THEN
+    v_interes := 0.03;
+    ELSIF p_tipoInteres = 5 THEN
+    v_interes := 0.04;
+    END IF;
    -- Interes calculado mediante el préstamo e interes
-   V_interes_calculado := (v_prestamo * v_interes) ;
+    v_interes_calculado := (v_saldo * v_interes) + v_saldo;
  
-   RETURN V_interes_calculado;
-   EXCEPTION
+   RETURN v_interes_calculado;
+    EXCEPTION
    WHEN NO_DATA_FOUND THEN
        DBMS_OUTPUT.PUT_LINE('💣 Error: El préstamo no ha sido encontrado.');
 
-   END calcularInteres;
+END calcularInteres;
 /
 
--- Función de disminuir préstamo
 
+
+--CREATE OR REPLACE PROCEDURE actualizarPagos(p_acutalizar CHAR(2)) 
+--IS
+DECLARE
+    v_id_cliente NUMBER;
+    v_tipo_prestamo NUMBER; 
+    v_cod_sucursal NUMBER :=1;
+    v_monto_pago NUMBER(15, 2) DEFAULT 0;
+    v_status char(2) := 'P';
+
+CURSOR c_transacpagos IS
+    SELECT 
+    id_cliente, 
+    tipo_prestamo,
+    monto_pago
+    FROM TRANSACPAGOS
+    WHERE
+    status = v_status;
+BEGIN
+
+OPEN c_transacpagos;
+    LOOP
+    FETCH c_transacpagos INTO
+       v_id_cliente,
+       v_tipo_prestamo,
+       v_monto_pago;
+    EXIT
+    WHEN c_transacpagos%NOTFOUND;
+    
+    UPDATE PRESTAMOS
+    SET 
+    saldo_actual = calcularInteres(v_tipo_prestamo,saldo_actual) - v_monto_pago,
+    importe_pago = importe_pago + v_monto_pago,
+    interes_pagado = interes_pagado + (calcularInteres(v_tipo_prestamo,saldo_actual) - SALDO_ACTUAL)
+    WHERE
+    id_cliente = v_id_cliente
+    AND
+    cod_tipo_prestamo = v_tipo_prestamo;
+
+    UPDATE TIPOS_PRE_SUCURSAL
+    SET MONTO_PRESTA = MONTO_PRESTA - v_monto_pago
+    WHERE
+    cod_sucursal = v_cod_sucursal
+    AND
+    cod_t_prestam = v_tipo_prestamo;
+
+    UPDATE SUCURSALES
+    SET MONTO_PRESTAMO = MONTO_PRESTAMO - v_monto_pago               
+    WHERE
+    cod_sucursal = v_cod_sucursal;                                   
+    END LOOP;
+CLOSE c_transacpagos;
+
+END;
+/
+
+
+/*
+-- Función de disminuir préstamo
 CREATE OR REPLACE FUNCTION disminuirPrestamo(
 -- TODO Falta colocar de donde saca eso, p_mont_mensual p_monto_interes y p_monto_a_pagar
     p_monto_mensual IN PRESTAMOS.monto_aprobado%TYPE,
@@ -70,7 +131,7 @@ RETURN NUMBER IS
    BEGIN
 
    -- Interes calculado mediante el préstamo e interes
-   IF v_monto_a_pagar - (v_monto_interes + v_monto_mensual) >= 0
+   IF v_monto_a_pagar - v_monto_interes  >= 0
    V_monto_actual = v_monto_a_pagar - (v_monto_interes + v_monto_mensual)   
    ELSE
     V_monto_actual = v_monto_a_pagar - v_monto_interes
@@ -83,94 +144,4 @@ RETURN NUMBER IS
 
    END disminuirPrestamo;
 /
-
-
-
-CREATE OR REPLACE PROCEDURE insertUpdate(
-    p_monto_prestamo IN SUCURSALES.monto_prestamo%TYPE;
-    p_saldo_actual IN PRESTAMOS.saldo_actual&TYPE;
-)
-BEGIN
-
-    -- Aqui se implementaría el cursor
-    CURSOR Pagos IS
-    SELECT saldo_actual, monto_prestamo
-    UPDATE
-
-    FROM p PRESTAMOS, s SUCURSALES
-
-    -- Aqui iria la logica del update
-
-    
-
-END;
-/
-
---1
-
---2
-
---1
-
---1
-
---1
-
-
---1
-
-/*
-
--- BLOQUE ANÓNIMO: CALCULO DE NOMINA --
-DECLARE
-   -- Se declaran las variables de los colaboradores
-   v_Id_Colab                      colaboradores.id_codcolaborador%TYPE;
-   v_SalarioM_Colab                colaboradores.salario_mensual%TYPE;
-   v_Status_colab                  colaboradores.status%TYPE := 'A';
-   v_intSeqVal NUMBER;
-   
-   CURSOR c_Salarios IS
-   SELECT id_codcolaborador,
-   salario_mensual
-   FROM COLABORADORES
-   WHERE status = v_Status_colab;
- 
-BEGIN
-   -- Este código se emplea los días quince y treinta de cada mes.
-   -- Si se quiere probar el código, cambiar los valores a el día en la que usted se encuentra
-   -- Por ejemplo: Si usted lo prueba el 6 de octubre, colocar 06 en el date
-   -- Ejem: IF to_char(CURRENT_DATE, 'dd') = '06' OR to_char(CURRENT_DATE, 'dd') = '30' THEN
-   IF to_char(CURRENT_DATE, 'dd') = '10' OR to_char(CURRENT_DATE, 'dd') = '30' THEN
-       OPEN c_Salarios;
-       LOOP
-       FETCH c_Salarios INTO
-       v_Id_Colab,
-       v_SalarioM_Colab;
-       EXIT
-       WHEN c_salarios%NOTFOUND;
-       select SEC_ID_SALARIO.nextval into v_intSeqVal from dual;
-       INSERT INTO salario_quincenal (
-           id_salario,id_codcolaborador, fecha_pago, salario_quincenal,
-           seguro_social, seguro_educativo, salario_neto)
-       VALUES (
-           v_intSeqVal,
-           v_Id_Colab,
-           SYSDATE(),
-           Cal_salarioQuincenal(v_SalarioM_Colab),
-           Cal_seguroEducativo(v_SalarioM_Colab),
-           Cal_seguroSocial(v_SalarioM_Colab),
-           Cal_salarioNeto(v_SalarioM_Colab)
-       );
-       
-       END LOOP;
-       CLOSE c_Salarios;
-   ELSE
-       DBMS_OUTPUT.PUT_LINE('💣 Error: Hoy no es día de pago.');
-   END IF;
-EXCEPTION
-   WHEN NO_DATA_FOUND THEN
-       DBMS_OUTPUT.PUT_LINE('💣 Error: Este ID no existe.');
-END;
-/
-
 */

@@ -1,5 +1,5 @@
 
-    ---TIPOS_CORREOS--
+    /*---TIPOS_CORREOS--
     EXECUTE Nuevo_tipoCorreo('Personal');
     EXECUTE Nuevo_tipoCorreo('Profesional');
     EXECUTE Nuevo_tipoCorreo('Academico');
@@ -9,21 +9,7 @@
     EXECUTE Nuevo_tipotelefonos('Residencia');
     EXECUTE Nuevo_tipotelefonos('Familiar');
     EXECUTE Nuevo_tipotelefonos('Conyugue');
-
-    --TIPOS_PRESTAMOS--
-    EXECUTE Nuevo_tipoPrestamo('Hipoteca', 0.05);
-    EXECUTE Nuevo_tipoPrestamo('Personal', 0.06);
-    EXECUTE Nuevo_tipoPrestamo('CasaCash', 0.02);
-    EXECUTE Nuevo_tipoPrestamo('Auto', 0.03);
-    EXECUTE Nuevo_tipoPrestamo('Garantizado con Ahorros', 0.04);
-
-    --SUCURSALES
-    EXECUTE NuevaSucursal('Primera',0);
-    EXECUTE NuevaSucursal('Segunda',0);
-    EXECUTE NuevaSucursal('Tercera',0);
-    EXECUTE NuevaSucursal('Cuarta',0);
-
-   --PROVINCIAS--
+      --PROVINCIAS--
 
     execute NuevaProvincia('Bocas del Toro');
     execute NuevaProvincia('Coclé');
@@ -34,7 +20,22 @@
     execute NuevaProvincia('Los Santos');
     execute NuevaProvincia('Panamá');
     execute NuevaProvincia('Veraguas');
-    execute NuevaProvincia('Panamá Oeste');
+    execute NuevaProvincia('Panamá Oeste');*/
+
+    --TIPOS_PRESTAMOS--
+    EXECUTE Nuevo_tipoPrestamo('Hipoteca', 0.05);
+    EXECUTE Nuevo_tipoPrestamo('Personal', 0.06);
+    EXECUTE Nuevo_tipoPrestamo('CasaCash', 0.02);
+    EXECUTE Nuevo_tipoPrestamo('Auto', 0.03);
+    EXECUTE Nuevo_tipoPrestamo('Garantizado con Ahorros', 0.04);
+
+    --SUCURSALES
+    EXECUTE NuevaSucursal('Primera');
+    EXECUTE NuevaSucursal('Segunda');
+    EXECUTE NuevaSucursal('Tercera');
+    EXECUTE NuevaSucursal('Cuarta');
+
+ 
 
     --PROFESIONES--
     execute Nuevo_tipoprofesion('Profesor');
@@ -49,34 +50,49 @@
     execute Nuevo_tipoprofesion('Reportero');
 
     ---CLIENTES
-    execute insertCliente('800-99-123','JUAN','ZELAYA','16-01-1995','M',1,'La Locería calle 5', 1);
-    execute insertCliente('800-99-124','KREVITH','SHAW','20-08-1981','M',2,'La Gloria, Bethania, cl 19cN, ca 37', 2);
-    execute insertCliente('800-99-125','BORIS','FLORES','15-09-1992','M',3,'Plaza Camino de Cruces El Dorado', 3);
-    execute insertCliente('800-99-126','SERGIO','ROJAS','25-05-1993','M',4,'San francisco calle 70', 4);
-    execute insertCliente('800-99-127','RANDALL','WAYNE','13-04-1998','M',5,'Obarrio, Calle 56 Este, Edificio Enid', 1);
-    execute insertCliente('800-99-128','JORGE','MOLINA','17-07-1987','M',6,'PH Edison Corporate Center Piso 8.', 2);
-    execute insertCliente('800-99-129','SEBASTIAN','GONZALEZ','27-12-1991','M',7,'Calle 109 Este, entrada de Chanis', 3);
-    execute insertCliente('800-99-130','ANTONIO','FALLAS','12-06-1957','M',8,'Calle D El Cangrejo y Eusebio A Morales.', 4);
-    execute insertCliente('800-99-131','JOSE','FALLAS','09-02-2000','M',9,'Calle Williamson Place, La Boca, Ancón', 1);
-    execute insertCliente('800-99-132','PATRICIA','CENTENO','16-01-1995','F',10,'Calle 53 El Cangrejo', 2);
+    execute insertCliente('800-99-123','JUAN','ZELAYA','16-JAN-1995','M',1,'La Locería calle 5', 1);
+    execute insertCliente('800-99-124','KREVITH','SHAW','20-AUG-1981','M',2,'La Gloria, Bethania, cl 19cN, ca 37', 2);
+    execute insertCliente('800-99-125','BORIS','FLORES','15-SEP-1992','M',3,'Plaza Camino de Cruces El Dorado', 3);
+    execute insertCliente('800-99-126','SERGIO','ROJAS','25-MAY-1993','M',4,'San francisco calle 70', 4);
+    execute insertCliente('800-99-127','RANDALL','WAYNE','13-APR-1998','M',5,'Obarrio, Calle 56 Este, Edificio Enid', 1);
+    execute insertCliente('800-99-128','JORGE','MOLINA','17-JUL-1987','M',6,'PH Edison Corporate Center Piso 8.', 2);
+    execute insertCliente('800-99-129','SEBASTIAN','GONZALEZ','27-DEC-1991','M',7,'Calle 109 Este, entrada de Chanis', 3);
+    execute insertCliente('800-99-130','ANTONIO','FALLAS','12-JUN-1957','M',8,'Calle D El Cangrejo y Eusebio A Morales.', 4);
+    --execute insertCliente('800-99-131','JOSE','FALLAS','09-FEB-2000','M',9,'Calle Williamson Place, La Boca, Ancón', 1);
+    execute insertCliente('800-99-132','PATRICIA','CENTENO','16-JAN-1995','F',10,'Calle 53 El Cangrejo', 2);
 
 
-    --PRESTAMOS-- NO PRESTAMO, ID_CLIENTE,TIPO_PRESTAMO,FECHA_APROBADO, MONTO_APROBADO, LETRA_MENSUAL,
-    INSERT INTO PRESTAMOS VALUES( 8977, 4,4421, TO_DATE('04-05-2021','DD-MM-YYYY HHMMSS'), 60000, 740, 180,TO_DATE('04-06-2021','DD-MM-YYYY'), 0.25  );
-    INSERT INTO PRESTAMOS VALUES( 8977, 2,3653, TO_DATE('05-05-2021','DD-MM-YYYY'), 1500, 100, 15,TO_DATE('05-06-2021','DD-MM-YYYY'), 0.25  );
-    INSERT INTO PRESTAMOS VALUES( 8977, 3,1604, TO_DATE('06-05-2021','DD-MM-YYYY'), 12000, 1333, 9,TO_DATE('06-06-2021','DD-MM-YYYY'), 0.25  );
-    INSERT INTO PRESTAMOS VALUES( 9010, 2,2400, TO_DATE('07-05-2021','DD-MM-YYYY'), 6000, 500, 12,TO_DATE('07-06-2021','DD-MM-YYYY'), 0.25  );
-    INSERT INTO PRESTAMOS VALUES( 9067, 5,1557, TO_DATE('08-05-2021','DD-MM-YYYY'), 2000, 200, 10,TO_DATE('08-06-2021','DD-MM-YYYY'), 0.25  );
-    INSERT INTO PRESTAMOS VALUES( 9173, 3,1801, TO_DATE('09-05-2021','DD-MM-YYYY'), 120000, 625, 192,TO_DATE('09-06-2021','DD-MM-YYYY'), 0.25  );
-    INSERT INTO PRESTAMOS VALUES( 9173, 4,2987, TO_DATE('10-05-2021','DD-MM-YYYY'), 5000, 1000, 5,TO_DATE('10-06-2021','DD-MM-YYYY'), 0.25  );
-    INSERT INTO PRESTAMOS VALUES( 9208, 4,2350, TO_DATE('11-05-2021','DD-MM-YYYY'), 3000, 272, 11,TO_DATE('11-06-2021','DD-MM-YYYY'), 0.25  );
-    INSERT INTO PRESTAMOS VALUES( 9235, 4,1522, TO_DATE('12-05-2021','DD-MM-YYYY'), 3500, 437.5, 8,TO_DATE('12-06-2021','DD-MM-YYYY'), 0.25  );
-    INSERT INTO PRESTAMOS VALUES( 9248, 4,3756, TO_DATE('13-05-2021','DD-MM-YYYY'), 8000, 400, 20,TO_DATE('13-06-2021','DD-MM-YYYY'), 0.25  );
-    INSERT INTO PRESTAMOS VALUES( 9251, 4,3849, TO_DATE('14-05-2021','DD-MM-YYYY'), 2500, 416, 6,TO_DATE('14-06-2021','DD-MM-YYYY'), 0.25  );
-    INSERT INTO PRESTAMOS VALUES( 9274, 2,4071, TO_DATE('15-05-2021','DD-MM-YYYY'), 1000, 166, 6,TO_DATE('15-06-2021','DD-MM-YYYY'), 0.25  );
-    INSERT INTO PRESTAMOS VALUES( 9333, 1,1187, TO_DATE('16-05-2021','DD-MM-YYYY'), 9000, 1125, 8,TO_DATE('16-06-2021','DD-MM-YYYY'), 0.25  );
-    INSERT INTO PRESTAMOS VALUES( 9333, 2,2789, TO_DATE('17-05-2021','DD-MM-YYYY'), 80000, 444, 180,TO_DATE('17-06-2021','DD-MM-YYYY'), 0.25  );
+    --PRESTAMOS--ID_CLIENTE,TIPO_PRESTAMO,MONTO_APROBADO,FECHA_pago,cod_sucursal
+    EXECUTE insertPrestamo(1,2,600,15,1);
+    EXECUTE insertPrestamo(1,3,250, 15,2);    
+    EXECUTE insertPrestamo(1,4,300,30,3);
+    EXECUTE insertPrestamo(2,1,600, 30,2);    
+    EXECUTE insertPrestamo(4,1,800, 15,4);    
+    EXECUTE insertPrestamo(2,3,900,30,4);
+    EXECUTE insertPrestamo(2,4,500, 15,2);    
+    EXECUTE insertPrestamo(3,1,400, 15,1);    
+    EXECUTE insertPrestamo(3,2,550, 15,1);
 
+
+    --TRANSACPAGOS : idcliente, tipo_prestamo, codigo sucursal, monto del pago
+    EXECUTE insertPagos(1,1,4,8000);
+    EXECUTE insertPagos(2,2,3,9000);
+    EXECUTE insertPagos(4,1,4,1000);
+    EXECUTE insertPagos(3,4,2,3000);
+    EXECUTE insertPagos(1,2,1,2000);
+    EXECUTE insertPagos(2,2,2,4000);
+    EXECUTE insertPagos(1,3,3,8000);
+
+    EXECUTE insertPagos(1,2,1,100);
+    EXECUTE insertPagos(1,3,1,50);
+    EXECUTE insertPagos(1,3,1,50);
+    EXECUTE insertPagos(1,3,1,50);
+
+    ROLLBACK;
+
+    DELETE FROM TIPOS_PRE_SUCURSAL;
+    DELETE FROM SUCURSALES;
+    
 /*
     --CLIENTES_CORREOS--
     INSERT INTO CLIENTES_CORREOS VALUES (8977,1,'8977JUAN1@MAIL.COM');

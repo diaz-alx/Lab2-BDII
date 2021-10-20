@@ -8,16 +8,17 @@ tipo de préstamos.
 CREATE OR REPLACE PROCEDURE insertPagos(  
     p_id_cliente      IN transacpagos.id_cliente %TYPE,
     p_tipo_prestamo    IN transacpagos.tipo_prestamo %TYPE, 
-    p_cod_sucursal     IN transacpagos.cod_sucursal %TYPE,
+    --p_cod_sucursal     IN transacpagos.cod_sucursal %TYPE,
     p_monto_pago       IN transacpagos.monto_pago %TYPE
 )
 IS
   intSeqVal number(10);
-  v_status char(2); 
+  v_status char(2);
+  v_cod_sucursal number; 
 BEGIN 
   select sec_id_transac.nextval into intSeqVal from dual;
 
-IF to_char(CURRENT_DATE, 'dd') = '15' OR to_char(CURRENT_DATE, 'dd') = '30' THEN
+IF to_char(CURRENT_DATE, 'dd') = '19' OR to_char(CURRENT_DATE, 'dd') = '30' THEN
 v_status := 'P';
 ELSE 
 v_status := 'NP';
@@ -37,7 +38,12 @@ VALUES(
   intSeqVal,    
   p_id_cliente,      
   p_tipo_prestamo,    
-  p_cod_sucursal,     
+  p_cod_sucursal, 
+  (SELECT cod_sucursal FROM PRESTAMO
+  WHERE 
+  id_cliente = p_id_cliente
+  AND 
+  p_t_presta = p_tipo_prestamo),    
   SYSDATE,    
   p_monto_pago,       
   SYSDATE, 

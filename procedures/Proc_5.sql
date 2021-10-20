@@ -33,7 +33,7 @@ RETURN NUMBER IS
    v_interes NUMBER;
    --v_exeption EXCEPTION;
 BEGIN
-
+    -- ASIGNA EL VALOR DEL INTERES EN BASE AL TIPO DE PRESTAMO
     IF p_tipoInteres = 1 THEN
     v_interes := 0.05;
     ELSIF p_tipoInteres = 2 THEN
@@ -63,15 +63,18 @@ END calcularInteres;
 DECLARE
     v_id_cliente NUMBER;
     v_tipo_prestamo NUMBER; 
-    v_cod_sucursal NUMBER :=1;
+    v_cod_sucursal NUMBER;
     v_monto_pago NUMBER(15, 2) DEFAULT 0;
-    v_status char(2) := 'P';
+    v_status char(2) := 'P'; -- SOLO SE PROCESARAN LOS ESTADOS CON ESTE VALOR
+    v_id_transac NUMBER;
 
 CURSOR c_transacpagos IS
-    SELECT 
+    SELECT
+    id_transaccion, 
     id_cliente, 
     tipo_prestamo,
-    monto_pago
+    monto_pago,
+    cod_sucursal
     FROM TRANSACPAGOS
     WHERE
     status = v_status;
@@ -80,12 +83,15 @@ BEGIN
 OPEN c_transacpagos;
     LOOP
     FETCH c_transacpagos INTO
+        v_id_transac,
        v_id_cliente,
        v_tipo_prestamo,
-       v_monto_pago;
+       v_monto_pago,
+       v_cod_sucursal;
     EXIT
     WHEN c_transacpagos%NOTFOUND;
     
+    --FALTA AGREGAR UNA CONDICION CUNADO EL SALDO LLEGE A CERO
     UPDATE PRESTAMOS
     SET 
     saldo_actual = calcularInteres(v_tipo_prestamo,saldo_actual) - v_monto_pago,
@@ -106,7 +112,15 @@ OPEN c_transacpagos;
     UPDATE SUCURSALES
     SET MONTO_PRESTAMO = MONTO_PRESTAMO - v_monto_pago               
     WHERE
-    cod_sucursal = v_cod_sucursal;                                   
+    cod_sucursal = v_cod_sucursal;
+
+    --ACTUALIZA EL ESTADO DEL PAGO PARA QUE NO SE VUELVA A REPETIR
+    UPDATE TRANSACPAGOS
+    SET
+    status = 'NP'
+    WHERE
+    id_transaccion = v_id_transac;
+
     END LOOP;
 CLOSE c_transacpagos;
 

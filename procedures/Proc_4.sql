@@ -14,7 +14,7 @@ CREATE OR REPLACE PROCEDURE insertPagos(
 IS
   intSeqVal number(10);
   v_status char(2);
-  v_cod_sucursal number; 
+  --v_cod_sucursal number; 
 BEGIN 
   select sec_id_transac.nextval into intSeqVal from dual;
 
@@ -37,13 +37,12 @@ INSERT INTO transacpagos(
 VALUES(
   intSeqVal,    
   p_id_cliente,      
-  p_tipo_prestamo,    
-  p_cod_sucursal, 
-  (SELECT cod_sucursal FROM PRESTAMO
+  p_tipo_prestamo, 
+  (SELECT cod_sucursal FROM PRESTAMOS
   WHERE 
   id_cliente = p_id_cliente
   AND 
-  p_t_presta = p_tipo_prestamo),    
+  cod_tipo_prestamo = p_tipo_prestamo),    
   SYSDATE,    
   p_monto_pago,       
   SYSDATE, 

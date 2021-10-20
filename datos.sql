@@ -70,23 +70,12 @@
     EXECUTE insertPrestamo(4,1,800, 15,4);    
     EXECUTE insertPrestamo(2,3,900,30,4);
     EXECUTE insertPrestamo(2,4,500, 15,2);    
-    EXECUTE insertPrestamo(3,1,400, 15,1);    
+    EXECUTE insertPrestamo(3,1,400, 15,4);    
     EXECUTE insertPrestamo(3,2,550, 15,1);
 
 
-    --TRANSACPAGOS : idcliente, tipo_prestamo, codigo sucursal, monto del pago
-    EXECUTE insertPagos(1,1,4,8000);
-    EXECUTE insertPagos(2,2,3,9000);
-    EXECUTE insertPagos(4,1,4,1000);
-    EXECUTE insertPagos(3,4,2,3000);
-    EXECUTE insertPagos(1,2,1,2000);
-    EXECUTE insertPagos(2,2,2,4000);
-    EXECUTE insertPagos(1,3,3,8000);
-
-    EXECUTE insertPagos(1,2,1,100);
-    EXECUTE insertPagos(1,3,1,50);
-    EXECUTE insertPagos(1,3,1,50);
-    EXECUTE insertPagos(1,3,1,50);
+    --TRANSACPAGOS : idcliente, tipo_prestamo,monto del pago
+    EXECUTE insertPagos(3,1,60);
 
     ROLLBACK;
 

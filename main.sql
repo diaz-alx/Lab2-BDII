@@ -1,5 +1,6 @@
 set serveroutput on;
 
+------------ 1- TABLAS PRINCIPALES----------------------
 
 CREATE TABLE tipos_correos (
     cod_correo  NUMBER NOT NULL,
@@ -154,8 +155,8 @@ CREATE TABLE transacpagos (
     fecha_inserccion DATE,
     usuario          VARCHAR2(45),
     status             char(2),
-    -- PAGADO, EN PROCESO, NO PAGADO
-    CONSTRAINT status_check CHECK(status in ('P','EP', 'NP')),
+    -- PENDIENTE, PROCESADO, NO PAGADO -- VERIFICAR MAS ESTADO
+    CONSTRAINT status_check CHECK(status in ('PE','PR', 'NP')),
     CONSTRAINT transacpagos_pk PRIMARY KEY ( id_transaccion ),
     CONSTRAINT transacpagos_prestamos_fk FOREIGN KEY ( id_cliente,tipo_prestamo )
         REFERENCES prestamos ( id_cliente,cod_tipo_prestamo ),
@@ -164,10 +165,11 @@ CREATE TABLE transacpagos (
 );
 
 
----VISTA DE LOS PRESTAMOS--
+------------ 2- VISTA DE LOS PRESTAMOS----------------------
 
 CREATE VIEW VIEW_PRESTAMOS
-AS select	 pe.NO_PRESTAMO as "NO. PRESTAMO",c.CEDULA as "CEDULA",
+AS 
+select pe.NO_PRESTAMO as "NO. PRESTAMO",c.CEDULA as "CEDULA",
 c.NOMBRE1 as "NOMBRE",
 	 c.APELLIDO1 as "APELLIDO",
 	 tp.NOMBRE_PRESTAMO as "TIPO DEPRESTAMO",
@@ -178,5 +180,575 @@ c.NOMBRE1 as "NOMBRE",
 	 PRESTAMOS pe,
 	 TIPOS_PRESTAMOS tp,
 	 CLIENTES c
-     where c.id_cliente = pe.id_cliente and pe.TIPO_PRESTAMO = tp.COD_PRESTAMO and c.COD_PROFESION = p.ID_PROFESION
+     where c.id_cliente = pe.id_cliente 
+     and pe.COD_TIPO_PRESTAMO = tp.COD_PRESTAMO 
+     and c.COD_PROFESION = p.ID_PROFESION
 order by c.CEDULA ASC;
+
+
+---------------- 3 -- LAS SEQUENCIAS ---------------------
+
+--SECUENCIAS DE ID DE TABLAS Correo--
+CREATE SEQUENCE sec_cod_correo
+INCREMENT BY 1
+START WITH 1
+MAXVALUE 99999
+MINVALUE 1;
+
+--SECUENCIAS DE ID DE TABLAS Prestamo--
+CREATE SEQUENCE sec_cod_prestamo
+INCREMENT BY 1
+START WITH 1
+MAXVALUE 99999
+MINVALUE 1;
+
+--SECUENCIAS DE ID DE TABLAS TELEFONO--
+CREATE SEQUENCE sec_cod_telefono
+INCREMENT BY 1
+START WITH 1
+MAXVALUE 99999
+MINVALUE 1;
+
+--SECUENCIAS DE ID DE TABLAS Profesion--
+CREATE SEQUENCE sec_id_profesion
+INCREMENT BY 1
+START WITH 1
+MAXVALUE 99999
+MINVALUE 1;
+
+--SECUENCIAS DE ID DE TABLAS Distrito--
+CREATE SEQUENCE sec_cod_distrito
+INCREMENT BY 1
+START WITH 1
+MAXVALUE 99999
+MINVALUE 1;
+
+--SECUENCIAS DE ID DE TABLAS Provincia--
+CREATE SEQUENCE sec_cod_provincia
+INCREMENT BY 1
+START WITH 1
+MAXVALUE 99999
+MINVALUE 1;
+
+--SECUENCIAS DE ID DE TABLAS Sucursales--
+CREATE SEQUENCE sec_cod_sucursal
+INCREMENT BY 1
+START WITH 1
+MAXVALUE 99999
+MINVALUE 1;
+
+--SECUENCIAS DE ID DE TABLAS Clientes--
+CREATE SEQUENCE sec_id_cliente
+INCREMENT BY 1
+START WITH 1
+MAXVALUE 99999
+MINVALUE 1;
+
+--ECUENCIAS DE ID DE TABLAS Prestamo--
+CREATE SEQUENCE sec_no_prestamo
+INCREMENT BY 100
+START WITH 100
+MAXVALUE 99999
+MINVALUE 100;
+
+--SECUENCIAS DE ID DE TABLAS Transacciones--
+CREATE SEQUENCE sec_id_transac
+INCREMENT BY 100
+START WITH 100
+MAXVALUE 99999
+MINVALUE 100;
+
+------------ 4- FUNCIONES ----------------------
+
+--EDAD
+CREATE OR REPLACE FUNCTION calcularEdadCliente(p_fecha date)
+RETURN NUMBER IS 
+v_clienteEdad number(3);
+v_fecha date := p_fecha;
+BEGIN
+  -- Necesitamos eso en años
+  v_clienteEdad := (SYSDATE - v_fecha) / 365;
+
+  RETURN v_clienteEdad;
+  
+  EXCEPTION
+   WHEN ZERO_DIVIDE THEN
+       DBMS_OUTPUT.PUT_LINE('💣 Error: El tipo de correo ya existe.');
+END calcularEdadCliente;
+/
+
+--INTERES
+CREATE OR REPLACE FUNCTION calcularInteres(
+    p_tipoInteres number,
+    p_saldoActual number
+)
+RETURN NUMBER IS
+   V_interes_calculado NUMBER;
+   v_saldo NUMBER := p_saldoActual;
+   v_interes NUMBER;
+   --v_exeption EXCEPTION;
+BEGIN
+    -- ASIGNA EL VALOR DEL INTERES EN BASE AL TIPO DE PRESTAMO
+    IF p_tipoInteres = 1 THEN
+    v_interes := 0.05;
+    ELSIF p_tipoInteres = 2 THEN
+    v_interes := 0.06;
+    ELSIF p_tipoInteres = 3 THEN
+    v_interes := 0.02;
+    ELSIF p_tipoInteres = 4 THEN
+    v_interes := 0.03;
+    ELSIF p_tipoInteres = 5 THEN
+    v_interes := 0.04;
+    END IF;
+   -- Interes calculado mediante el préstamo e interes
+    v_interes_calculado := (v_saldo * v_interes) + v_saldo;
+ 
+   RETURN v_interes_calculado;
+    EXCEPTION
+   WHEN NO_DATA_FOUND THEN
+       DBMS_OUTPUT.PUT_LINE('💣 Error: El préstamo no ha sido encontrado.');
+
+END calcularInteres;
+/
+
+------------ 5- PROCEDIMIENTOS ALMACENADOS ----------------------
+
+--PROCEDIMIENTO_1
+--TIPOS CORREOS
+CREATE or REPLACE PROCEDURE Nuevo_tipoCorreo(
+    p_Correo    IN tipos_correos.descripcion%TYPE)
+IS
+intSeqVal number(10);
+BEGIN
+    select sec_cod_correo.nextval into intSeqVal from dual;
+    INSERT into TIPOS_CORREOS (cod_correo,descripcion)
+    VALUES (intSeqVal,p_Correo);
+    COMMIT;
+EXCEPTION
+   WHEN DUP_VAL_ON_INDEX THEN
+       DBMS_OUTPUT.PUT_LINE('💣 Error: El tipo de correo ya existe.');
+END Nuevo_tipoCorreo;
+/
+
+--TIPOS PRESTAMOS
+CREATE or REPLACE PROCEDURE Nuevo_tipoPrestamo(
+    p_prestam    IN tipos_prestamos.nombre_prestamo%TYPE,
+    p_interes    IN TIPOS_PRESTAMOS.TASA_INTERES%TYPE)
+IS
+intSeqVal number(10);
+BEGIN
+    select sec_cod_prestamo.nextval into intSeqVal from dual;
+    INSERT into TIPOS_PRESTAMOS (cod_prestamo,nombre_prestamo,tasa_interes)
+    VALUES (intSeqVal,p_prestam,p_interes);
+    COMMIT;
+EXCEPTION
+   WHEN DUP_VAL_ON_INDEX THEN
+       DBMS_OUTPUT.PUT_LINE('💣 Error: El tipo de prestamo ya existe.');
+END Nuevo_tipoPrestamo;
+/
+
+--TIPOS telefonos
+CREATE or REPLACE PROCEDURE Nuevo_tipotelefonos(
+    p_telefonos    IN tipos_telefonos.descripcion%TYPE)
+IS
+intSeqVal number(10);
+BEGIN
+    select sec_cod_telefono.nextval into intSeqVal from dual;
+    INSERT into TIPOS_TELEFONOS (cod_telefono,descripcion)
+    VALUES (intSeqVal,p_telefonos);
+    COMMIT;
+EXCEPTION
+   WHEN DUP_VAL_ON_INDEX THEN
+       DBMS_OUTPUT.PUT_LINE('💣 Error: El tipo de telefono ya existe.');
+END Nuevo_tipotelefonos;
+/
+
+--TIPOS profesion
+CREATE or REPLACE PROCEDURE Nuevo_tipoprofesion(
+    p_profesion    IN profesiones.descripcion%TYPE)
+IS
+intSeqVal number(10);
+BEGIN
+    select sec_id_profesion.nextval into intSeqVal from dual;
+    INSERT into PROFESIONES(id_profesion,descripcion)
+    VALUES (intSeqVal,p_profesion);
+    COMMIT;
+EXCEPTION
+   WHEN DUP_VAL_ON_INDEX THEN
+       DBMS_OUTPUT.PUT_LINE('💣 Error: La profesion ya existe.');
+END Nuevo_tipoprofesion;
+/
+
+--Distritos
+CREATE or REPLACE PROCEDURE NuevoDistrito(
+    p_distrito    IN distritos.nombre%TYPE)
+IS
+intSeqVal number(10);
+BEGIN
+    select sec_cod_distrito.nextval into intSeqVal from dual;
+    INSERT into DISTRITOS(cod_distrito,nombre)
+    VALUES (intSeqVal,p_distrito);
+    COMMIT;
+EXCEPTION
+   WHEN DUP_VAL_ON_INDEX THEN
+       DBMS_OUTPUT.PUT_LINE('💣 Error: El distrito ya existe.');
+END NuevoDistrito;
+/
+
+--Provincias
+CREATE or REPLACE PROCEDURE NuevaProvincia(
+    p_provincia    IN provincias.nombre%TYPE)
+IS
+intSeqVal number(10);
+BEGIN
+    select sec_cod_provincia.nextval into intSeqVal from dual;
+    INSERT into PROVINCIAS(cod_provincia,nombre)
+    VALUES (intSeqVal,p_provincia);
+    COMMIT;
+EXCEPTION
+   WHEN DUP_VAL_ON_INDEX THEN
+       DBMS_OUTPUT.PUT_LINE('💣 Error: La provincia ya existe.');
+END NuevaProvincia;
+/
+
+--sucursales
+CREATE or REPLACE PROCEDURE NuevaSucursal(
+    p_sucursal    IN SUCURSALES.nombre%TYPE)
+IS
+intSeqVal number(10);
+v_sucursal VARCHAR2(100) := p_sucursal;
+v_monto number := 0;
+BEGIN
+
+select sec_cod_sucursal.nextval into intSeqVal from dual;
+    INSERT into SUCURSALES(COD_SUCURSAL,nombre,MONTO_PRESTAMO)
+    VALUES (
+        intSeqVal,
+        v_sucursal,
+        v_monto);
+
+--cada sucursal creada tendra 5 tipos de prestamos
+FOR v_counter IN 1..5 LOOP
+    INSERT INTO TIPOS_PRE_SUCURSAL(
+        COD_SUCURSAL,
+        COD_T_PRESTAM,
+        monto_presta,
+        fecha_mod)
+     VALUES(
+        intSeqVal,
+        v_counter,
+        v_monto,
+        to_date(sysdate,'DD-MM-YY')
+    );
+    COMMIT;
+    END LOOP;
+    
+EXCEPTION
+   WHEN DUP_VAL_ON_INDEX THEN
+       DBMS_OUTPUT.PUT_LINE('💣 Error: La sucursal ya existe.');
+END NuevaSucursal;
+/
+
+--PROCEDIMIENTO_2
+CREATE OR REPLACE PROCEDURE insertCliente(
+    p_cedula    IN clientes.cedula%TYPE,
+    p_Nombre    IN clientes.nombre1%TYPE,
+    p_Apellido  IN clientes.apellido1%TYPE,
+    p_fecha     IN clientes.fecha_nac%TYPE,
+    p_sexo      IN clientes.SEXO%TYPE,
+    p_profesion IN clientes.cod_profesion%TYPE,
+    p_direccion IN clientes.direccion%TYPE,
+    p_sucursal  IN clientes.cod_sucursal%TYPE) 
+
+IS 
+    intSeqVal number(10);
+    v_edad number(3) := calcularEdadCliente(p_fecha);
+BEGIN
+    select SEC_ID_cliente.nextval into intSeqVal from dual;
+INSERT into CLIENTES (id_cliente,
+    cedula,
+    nombre1,
+    apellido1,
+    fecha_nac,
+    edad,
+    sexo,
+    cod_profesion,
+    direccion,
+    cod_sucursal)
+VALUES (intSeqVal,
+    p_cedula,
+    p_nombre,
+    p_apellido,
+    to_date(p_fecha,'DD-MM-YYYY'),
+    v_edad,
+    p_sexo,
+    p_profesion,
+    p_direccion,
+    p_sucursal);
+    COMMIT;
+EXCEPTION
+   WHEN DUP_VAL_ON_INDEX THEN
+       DBMS_OUTPUT.PUT_LINE('💣 Error: El cliente ya existe.');
+END insertCliente;
+/
+
+--PROCEDIMIENTO_3
+CREATE OR REPLACE PROCEDURE insertPrestamo(
+    p_id_cliente            IN prestamos.id_cliente%TYPE,
+    p_cod_tipo_prestamo     IN prestamos.cod_tipo_prestamo%TYPE,
+    p_monto_aprobado        IN prestamos.monto_aprobado%TYPE,
+    p_fecha_pago            IN prestamos.fecha_pago%TYPE,
+    p_no_sucursal IN prestamos.cod_sucursal%TYPE
+)
+IS
+  v_cod_prestamo NUMBER := p_cod_tipo_prestamo;
+  intSeqVal number(10);
+  v_fecha date := SYSDATE;
+  v_saldo number := p_monto_aprobado;
+  v_monto_prestamo number := p_monto_aprobado;
+  v_interes NUMBER;
+  v_importe number := 0;
+  v_interes_pagado number := 0;
+  v_fecha_pago number := p_fecha_pago;
+  v_letra_mensual number := 0;
+BEGIN
+
+--1
+  select sec_no_prestamo.nextval into intSeqVal from dual;
+  SELECT tasa_interes INTO v_interes FROM TIPOS_PRESTAMOS WHERE cod_prestamo = v_cod_prestamo;
+
+--2  
+
+INSERT INTO PRESTAMOS(
+  no_prestamo,    
+  id_cliente,
+  cod_tipo_prestamo,    
+  fecha_aprobado, 
+  monto_aprobado,    
+  letra_mensual,      
+  importe_pago, 
+  fecha_pago,
+  tasa_interes, 
+  saldo_actual, 
+  interes_pagado,
+  fecha_mod,
+  cod_sucursal,
+  usuario)
+VALUES (intSeqVal,
+    p_id_cliente,
+    p_cod_tipo_prestamo,
+    to_date(v_fecha,'DD-MM-YYY HH24:MI:SS'),
+    p_monto_aprobado,
+    v_letra_mensual, 
+    v_importe, 
+    v_fecha_pago, 
+    v_interes,
+    v_saldo, 
+    v_interes_pagado,
+    to_date(v_fecha,'DD-MM-YYY HH24:MI:SS'),
+    p_no_sucursal,
+    user
+    );
+
+--Actualizacion de la tabla relacion muchos a muchos de TIPO PRESTAMO Y SUCURSAL
+UPDATE TIPOS_PRE_SUCURSAL SET MONTO_PRESTA = MONTO_PRESTA + v_monto_prestamo
+    WHERE cod_sucursal = p_no_sucursal and cod_t_prestam = p_cod_tipo_prestamo; 
+
+UPDATE SUCURSALES SET MONTO_PRESTAMO = MONTO_PRESTAMO + v_monto_prestamo
+    WHERE cod_sucursal = p_no_sucursal; 
+
+COMMIT;
+EXCEPTION
+   WHEN DUP_VAL_ON_INDEX THEN
+       DBMS_OUTPUT.PUT_LINE('💣 Error: El PRESTAMO ya existe.');
+END insertPrestamo;
+/
+
+
+--PROCEDIMIENTO_4
+CREATE OR REPLACE PROCEDURE insertPagos(  
+    p_id_cliente      IN transacpagos.id_cliente %TYPE,
+    p_tipo_prestamo    IN transacpagos.tipo_prestamo %TYPE, 
+    --p_cod_sucursal     IN transacpagos.cod_sucursal %TYPE,
+    p_monto_pago       IN transacpagos.monto_pago %TYPE
+)
+IS
+  intSeqVal number(10);
+  v_status char(2);
+  --v_cod_sucursal number; 
+BEGIN 
+  select sec_id_transac.nextval into intSeqVal from dual;
+
+--MODIFICAR LA FECHA PARA REALIZAR PRUEBAS
+IF to_char(CURRENT_DATE, 'dd') = '25' OR to_char(CURRENT_DATE, 'dd') = '30' THEN
+v_status := 'PE';
+ELSE 
+v_status := 'NP';
+END IF; 
+INSERT INTO transacpagos(
+    id_transaccion,     
+    id_cliente,      
+    tipo_prestamo,    
+    cod_sucursal,     
+    fecha_transac,    
+    monto_pago,       
+    fecha_inserccion, 
+    usuario,
+    status         
+)
+VALUES(
+  intSeqVal,    
+  p_id_cliente,      
+  p_tipo_prestamo, 
+  (SELECT cod_sucursal FROM PRESTAMOS
+  WHERE 
+  id_cliente = p_id_cliente
+  AND 
+  cod_tipo_prestamo = p_tipo_prestamo),    
+  SYSDATE,    
+  p_monto_pago,       
+  SYSDATE, 
+  USER,
+  v_status);
+COMMIT;
+
+EXCEPTION
+   WHEN DUP_VAL_ON_INDEX THEN
+       DBMS_OUTPUT.PUT_LINE('💣 Error: El PAGO ya existe.');
+END insertPagos;
+/
+
+--PROCEDIMIENTO_5
+
+CREATE OR REPLACE PROCEDURE actualizarPagos
+IS
+    v_id_cliente NUMBER;
+    v_tipo_prestamo NUMBER; 
+    v_cod_sucursal NUMBER;
+    v_monto_pago NUMBER(15, 2) DEFAULT 0;
+    v_status char(2) := 'PE'; -- SOLO SE PROCESARAN LOS ESTADOS CON ESTE VALOR
+    v_id_transac NUMBER;
+
+CURSOR c_transacpagos IS
+    SELECT
+    id_transaccion, 
+    id_cliente, 
+    tipo_prestamo,
+    monto_pago,
+    cod_sucursal
+    FROM TRANSACPAGOS
+    WHERE
+    status = v_status;
+BEGIN
+
+OPEN c_transacpagos;
+    LOOP
+    FETCH c_transacpagos INTO
+        v_id_transac,
+       v_id_cliente,
+       v_tipo_prestamo,
+       v_monto_pago,
+       v_cod_sucursal;
+    EXIT
+    WHEN c_transacpagos%NOTFOUND;
+    
+    --FALTA AGREGAR UNA CONDICION CUNADO EL SALDO LLEGE A CERO
+    UPDATE PRESTAMOS
+    SET 
+    saldo_actual = calcularInteres(v_tipo_prestamo,saldo_actual) - v_monto_pago,
+    importe_pago = importe_pago + v_monto_pago,
+    interes_pagado = interes_pagado + (calcularInteres(v_tipo_prestamo,saldo_actual) - SALDO_ACTUAL)
+    WHERE
+    id_cliente = v_id_cliente
+    AND
+    cod_tipo_prestamo = v_tipo_prestamo;
+
+    UPDATE TIPOS_PRE_SUCURSAL
+    SET MONTO_PRESTA = MONTO_PRESTA - v_monto_pago
+    WHERE
+    cod_sucursal = v_cod_sucursal
+    AND
+    cod_t_prestam = v_tipo_prestamo;
+
+    UPDATE SUCURSALES
+    SET MONTO_PRESTAMO = MONTO_PRESTAMO - v_monto_pago               
+    WHERE
+    cod_sucursal = v_cod_sucursal;
+
+    --ACTUALIZA EL ESTADO DEL PAGO PARA QUE NO SE VUELVA A REPETIR
+    UPDATE TRANSACPAGOS
+    SET
+    status = 'PR'
+    WHERE
+    id_transaccion = v_id_transac;
+
+    END LOOP;
+CLOSE c_transacpagos;
+
+END;
+/
+
+
+------------------- 6 INSERCCION DE LOS DATOS -------------
+
+    --TIPOS_PRESTAMOS--
+EXECUTE Nuevo_tipoPrestamo('Hipoteca', 0.05);
+EXECUTE Nuevo_tipoPrestamo('Personal', 0.06);
+EXECUTE Nuevo_tipoPrestamo('CasaCash', 0.02);
+EXECUTE Nuevo_tipoPrestamo('Auto', 0.03);
+EXECUTE Nuevo_tipoPrestamo('Garantizado con Ahorros', 0.04);
+
+    --SUCURSALES
+EXECUTE NuevaSucursal('Primera');
+EXECUTE NuevaSucursal('Segunda');
+EXECUTE NuevaSucursal('Tercera');
+EXECUTE NuevaSucursal('Cuarta');
+    --PROFESIONES--
+EXECUTE Nuevo_tipoprofesion('Profesor');
+EXECUTE Nuevo_tipoprofesion('Dentista');
+EXECUTE Nuevo_tipoprofesion('Policia');
+EXECUTE Nuevo_tipoprofesion('Bombero');
+EXECUTE Nuevo_tipoprofesion('Enfermero');
+EXECUTE Nuevo_tipoprofesion('Arquictecto');
+EXECUTE Nuevo_tipoprofesion('Abogado');
+EXECUTE Nuevo_tipoprofesion('Contador');
+EXECUTE Nuevo_tipoprofesion('Químico');
+EXECUTE Nuevo_tipoprofesion('Reportero');
+
+    ---CLIENTES
+EXECUTE insertCliente('800-99-123','JUAN','ZELAYA','16-JAN-1995','M',1,'La Locería calle 5', 1);
+EXECUTE insertCliente('800-99-124','KREVITH','SHAW','20-AUG-1981','M',2,'La Gloria, Bethania, cl 19cN, ca 37', 2);
+EXECUTE insertCliente('800-99-125','BORIS','FLORES','15-SEP-1992','M',3,'Plaza Camino de Cruces El Dorado', 3);
+EXECUTE insertCliente('800-99-126','SERGIO','ROJAS','25-MAY-1993','M',4,'San francisco calle 70', 4);
+EXECUTE insertCliente('800-99-127','RANDALL','WAYNE','13-APR-1998','M',5,'Obarrio, Calle 56 Este, Edificio Enid', 1);
+EXECUTE insertCliente('800-99-128','JORGE','MOLINA','17-JUL-1987','M',6,'PH Edison Corporate Center Piso 8.', 2);
+EXECUTE insertCliente('800-99-129','SEBASTIAN','GONZALEZ','27-DEC-1991','M',7,'Calle 109 Este, entrada de Chanis', 3);
+EXECUTE insertCliente('800-99-130','ANTONIO','FALLAS','12-JUN-1957','M',8,'Calle D El Cangrejo y Eusebio A Morales.', 4);
+--Execute insertCliente('800-99-131','JOSE','FALLAS','09-FEB-2000','M',9,'Calle Williamson Place, La Boca, Ancón', 1);
+EXECUTE insertCliente('800-99-132','PATRICIA','CENTENO','16-JAN-1995','F',10,'Calle 53 El Cangrejo', 2);
+
+
+--PRESTAMOS--ID_CLIENTE, TIPO PRESTAMO, MONTO APROBADO,FECHA_pago, cod_sucursal
+EXECUTE insertPrestamo(1,2,600,15,1);
+EXECUTE insertPrestamo(1,3,250, 15,2);    
+EXECUTE insertPrestamo(1,4,300,30,3);
+EXECUTE insertPrestamo(2,1,600, 30,2);    
+EXECUTE insertPrestamo(4,1,800, 15,4);    
+EXECUTE insertPrestamo(2,3,900,30,4);
+EXECUTE insertPrestamo(2,4,500, 15,2);    
+EXECUTE insertPrestamo(3,1,400, 15,4);    
+EXECUTE insertPrestamo(3,2,550, 15,1);
+
+--PAGOS ( ID CLIENTE, TIPO PRESTAMO, MOTO DEL PAGO)
+EXECUTE insertPagos(1,2,100); 
+EXECUTE insertPagos(1,2,100); 
+EXECUTE insertPagos(1,2,100); 
+EXECUTE insertPagos(1,2,100); 
+EXECUTE insertPagos(1,2,100); 
+EXECUTE insertPagos(1,2,100); 
+EXECUTE insertPagos(1,2,100);
+EXECUTE insertPagos(1,2,62.79);
+EXECUTE insertPagos(1,2,3.77);
+
+
+

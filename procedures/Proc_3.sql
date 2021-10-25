@@ -65,12 +65,6 @@ VALUES (intSeqVal,
     user
     );
 
- --3   
---ACTUALIZACION DE LA TABLA SUCURSALES: MONTOS
--- SELECT monto_presta INTO v_monto_prestamo 
---     FROM TIPOS_PRE_SUCURSAL 
---     WHERE cod_sucursal = p_no_sucursal and cod_t_prestam = p_cod_tipo_prestamo; 
-
 --Actualizacion de la tabla relacion muchos a muchos de TIPO PRESTAMO Y SUCURSAL
  
 UPDATE TIPOS_PRE_SUCURSAL SET MONTO_PRESTA = MONTO_PRESTA + v_monto_prestamo
@@ -88,5 +82,4 @@ EXCEPTION
 END insertPrestamo;
 /
 
-DELETE FROM PRESTAMOS;
 

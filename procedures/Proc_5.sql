@@ -58,36 +58,37 @@ END calcularInteres;
 
 
 
---CREATE OR REPLACE PROCEDURE actualizarPagos(p_acutalizar CHAR(2)) 
---IS
-DECLARE
+
+
+CREATE OR REPLACE PROCEDURE actualizarPagos
+IS
     v_id_cliente NUMBER;
     v_tipo_prestamo NUMBER; 
     v_cod_sucursal NUMBER;
     v_monto_pago NUMBER(15, 2) DEFAULT 0;
-    v_status char(2) := 'P'; -- SOLO SE PROCESARAN LOS ESTADOS CON ESTE VALOR
+    v_status char(2) := 'PE'; -- SOLO SE PROCESARAN LOS ESTADOS CON ESTE VALOR
     v_id_transac NUMBER;
 
 CURSOR c_transacpagos IS
     SELECT
-    id_transaccion, 
-    id_cliente, 
-    tipo_prestamo,
-    monto_pago,
-    cod_sucursal
+        id_transaccion, 
+        id_cliente, 
+        tipo_prestamo,
+        monto_pago,
+        cod_sucursal
     FROM TRANSACPAGOS
     WHERE
-    status = v_status;
+        status = v_status;
 BEGIN
 
 OPEN c_transacpagos;
     LOOP
     FETCH c_transacpagos INTO
         v_id_transac,
-       v_id_cliente,
-       v_tipo_prestamo,
-       v_monto_pago,
-       v_cod_sucursal;
+        v_id_cliente,
+        v_tipo_prestamo,
+        v_monto_pago,
+        v_cod_sucursal;
     EXIT
     WHEN c_transacpagos%NOTFOUND;
     
@@ -117,7 +118,7 @@ OPEN c_transacpagos;
     --ACTUALIZA EL ESTADO DEL PAGO PARA QUE NO SE VUELVA A REPETIR
     UPDATE TRANSACPAGOS
     SET
-    status = 'NP'
+    status = 'PR'
     WHERE
     id_transaccion = v_id_transac;
 
@@ -127,6 +128,9 @@ CLOSE c_transacpagos;
 END;
 /
 
+
+-- PARA LLAMAR AL PROCEDIMIENTO PASAR LOS SIGUIENTES VALORES:
+-- 
 
 /*
 -- Función de disminuir préstamo

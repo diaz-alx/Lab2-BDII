@@ -77,11 +77,6 @@
     --TRANSACPAGOS : idcliente, tipo_prestamo,monto del pago
     EXECUTE insertPagos(3,1,60);
 
-    ROLLBACK;
-
-    DELETE FROM TIPOS_PRE_SUCURSAL;
-    DELETE FROM SUCURSALES;
-    
 /*
     --CLIENTES_CORREOS--
     INSERT INTO CLIENTES_CORREOS VALUES (8977,1,'8977JUAN1@MAIL.COM');

@@ -102,7 +102,6 @@ IS
 intSeqVal number(10);
 v_sucursal VARCHAR2(100) := p_sucursal;
 v_monto number := 0;
---v_counter NUMBER := 1;
 BEGIN
 
 select sec_cod_sucursal.nextval into intSeqVal from dual;
@@ -112,20 +111,19 @@ select sec_cod_sucursal.nextval into intSeqVal from dual;
         v_sucursal,
         v_monto);
 
+--cada sucursal creada tendra 5 tipos de prestamos
 FOR v_counter IN 1..5 LOOP
-
     INSERT INTO TIPOS_PRE_SUCURSAL(
         COD_SUCURSAL,
         COD_T_PRESTAM,
-        FECHA_UP)
-        --fecha_mod)
+        monto_presta,
+        fecha_mod)
      VALUES(
         intSeqVal,
         v_counter,
-        --v_monto
+        v_monto,
         to_date(sysdate,'DD-MM-YY')
     );
-    --v_counter := v_counter+1;
     COMMIT;
     END LOOP;
     
@@ -135,10 +133,3 @@ EXCEPTION
 END NuevaSucursal;
 /
 
-
-EXECUTE NuevaSucursal('Primera');
-EXECUTE Nuevo_tipoPrestamo('Hipoteca', 0.05);
-EXECUTE Nuevo_tipoPrestamo('Personal', 0.06);
-EXECUTE Nuevo_tipoPrestamo('CasaCash', 0.02);
-EXECUTE Nuevo_tipoPrestamo('Auto', 0.03);
-EXECUTE Nuevo_tipoPrestamo('Garantizado con Ahorros', 0.04);

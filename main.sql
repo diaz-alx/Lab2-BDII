@@ -691,6 +691,7 @@ END;
 
 ------------------- 6 INSERCCION DE LOS DATOS -------------
 
+
     --TIPOS_PRESTAMOS--
 EXECUTE Nuevo_tipoPrestamo('Hipoteca', 0.05);
 EXECUTE Nuevo_tipoPrestamo('Personal', 0.06);

@@ -751,5 +751,6 @@ EXECUTE insertPagos(1,2,100);
 EXECUTE insertPagos(1,2,62.79);
 EXECUTE insertPagos(1,2,3.77);
 
+EXECUTE insertPagos(4,2,3.22);
 
 

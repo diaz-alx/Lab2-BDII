@@ -222,7 +222,7 @@ CREATE TABLE ahorros (
         REFERENCES clientes (id_cliente)
 );
 
-
+drop table ahorros;
 
 -- 4 Transacciones Depo Reti
 CREATE TABLE transaDepoReti (

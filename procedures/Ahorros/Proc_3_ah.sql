@@ -18,11 +18,14 @@ IS
   --v_usuario VARCHAR2(45) := USER;
   v_status CHAR(2) := 'PE';
   v_monto NUMBER(15,2) := p_monto;
+  v_expection VARCHAR2(250) = EXCEPTION;
 BEGIN
   select sec_transacdeporeti.nextval into intSeqVal from dual;
 
+-- CONDICION DE TRANSACCION 1= DEPOSITO, 2=RETIRO solo de cuenta corriente se puede retirar.
+
+IF p_tipo_ahorro = 2 AND (p_tipo_transac = 1 OR 2)  THEN
   INSERT INTO transaDepoReti
-  
   VALUES(
     intSeqVal,
     p_no_cuenta,
@@ -38,6 +41,29 @@ BEGIN
     v_status,
     user
   );
+
+ELSIF (p_tipo ahorro = 1 OR 3) AND p_tipo_transac = 1 THEN
+  INSERT INTO transaDepoReti
+  VALUES(
+    intSeqVal,
+    p_no_cuenta,
+    p_id_cliente,
+    p_tipo_ahorro,
+    p_cod_sucursal,
+    --to_date(v_fecha_ap,'DD-MM-YYY HH24:MI:SS'),
+    SYSDATE,
+    p_tipo_transac,
+    v_monto,
+    --to_date(v_fecha_ap,'DD-MM-YYY HH24:MI:SS'),
+    SYSDATE,
+    v_status,
+    user
+  );
+ELSE
+
+v_exeption = ;
+
+END IF;
 COMMIT;
 EXCEPTION
    WHEN DUP_VAL_ON_INDEX THEN

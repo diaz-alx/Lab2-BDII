@@ -222,6 +222,8 @@ CREATE TABLE ahorros (
         REFERENCES clientes (id_cliente)
 );
 
+
+
 -- 4 Transacciones Depo Reti
 CREATE TABLE transaDepoReti (
     id_transaccion NUMBER NOT NULL,
@@ -240,7 +242,7 @@ CREATE TABLE transaDepoReti (
     CONSTRAINT transaDepoReti_pk PRIMARY KEY ( id_transaccion ), 
     CONSTRAINT transadeporeti_ahorros_fk FOREIGN KEY (no_cuenta)
         REFERENCES ahorros(no_cuenta),
-    CONSTRAINT transaDepoReti_cliente_fk FOREIGN KEY (id_cliente)
+    CONSTRAINT ti_transaDepoRecliente_fk FOREIGN KEY (id_cliente)
         REFERENCES clientes(id_cliente),
     CONSTRAINT transaDepoReti_tipoahorro_fk FOREIGN KEY (tipo_ahorro)
         REFERENCES tipos_ahorros(id_tipo_ahorro),    
@@ -248,7 +250,7 @@ CREATE TABLE transaDepoReti (
         REFERENCES sucursales ( cod_sucursal )
 );
 
--- drop table transadeporeti;
+drop table transadeporeti;
 
 
 

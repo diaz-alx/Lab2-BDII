@@ -167,7 +167,7 @@ EXECUTE Nuevo_tipoAhorro('Ahorro escolar', 0.06);
 4-deposito MENSUAL number
 5-fecha deposito=dia, 
 6-fecha retiro=dia */ 
-EXECUTE insertAhorro(2,1,1,10,15,10);
+EXECUTE insertAhorro(2,1,2,10,15,10);
 
 /*--PARAMETROS TRANSAC
 1-id_cliente number

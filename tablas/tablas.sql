@@ -138,7 +138,7 @@ CREATE TABLE prestamos (
         REFERENCES tipos_prestamos ( cod_prestamo )
 );
 
-
+-- fecha_inserccion , debe ser fecha_insercion (solo por quedar bien con la RAE)
 CREATE TABLE transacpagos (
     id_transaccion   NUMBER NOT NULL,
     id_cliente     NUMBER NOT NULL,
@@ -154,7 +154,6 @@ CREATE TABLE transacpagos (
     CONSTRAINT transac_sucursales_fk FOREIGN KEY ( cod_sucursal )
         REFERENCES sucursales ( cod_sucursal )
 );
-
 
 ---VISTA DE LOS PRESTAMOS--
 
@@ -172,3 +171,117 @@ c.NOMBRE1 as "NOMBRE",
 	 CLIENTES c
      where c.id_cliente = pe.id_cliente and pe.TIPO_PRESTAMO = tp.COD_PRESTAMO and c.COD_PROFESION = p.ID_PROFESION
 order by c.CEDULA ASC;
+
+
+----PARTE II DEL LABORATORIO 7------
+
+-- 1 Tipo de ahorros
+CREATE TABLE tipos_ahorros (
+    id_tipo_ahorro NUMBER NOT NULL,
+    descripcion VARCHAR2(30),
+    tasa_interes NUMBER (15,2),
+    CONSTRAINT tp_ahorro_pk PRIMARY KEY (id_tipo_ahorro)
+);
+
+
+-- 2 Tipo de AH Sucursal
+CREATE TABLE TIPO_AH_SUC (
+    cod_sucursal NUMBER NOT NULL,
+    id_tipo_ahorro NUMBER NOT NULL,
+    monto_ahorros NUMBER(15,2) DEFAULT 0,
+    fecha_mod DATE,  
+    CONSTRAINT tipo_ah_suc_pk PRIMARY KEY (cod_sucursal, id_tipo_ahorro),
+    CONSTRAINT tipo_suc_fk FOREIGN KEY (cod_sucursal) 
+    REFERENCES SUCURSALES (cod_sucursal),
+    CONSTRAINT tipo_ah_fk FOREIGN KEY (id_tipo_ahorro) 
+    REFERENCES TIPOS_AHORROS (id_tipo_ahorro)
+);
+
+
+-- 3 Ahorros
+CREATE TABLE ahorros (
+    no_cuenta NUMBER NOT null,
+    id_cliente NUMBER NOT NULL,
+    tipo_ahorro NUMBER NOT NULL,
+    cod_sucursal NUMBER NOT NULL,
+    fecha_apertura DATE,
+    tasa_interes NUMBER(2, 2) DEFAULT 0,
+    deposito_mensual  NUMBER(15, 2), 
+    saldo_ahorro      NUMBER(15, 2), 
+    saldo_interes     NUMBER(15, 2),  
+    usuario        VARCHAR2(45),
+    fecha_deposito NUMBER,
+    fecha_retiro   NUMBER, 
+    fecha_mod      DATE,
+    CONSTRAINT ahorros_pk PRIMARY KEY (no_cuenta),
+    CONSTRAINT ahorros_sucursales_fk FOREIGN KEY (cod_sucursal)
+        REFERENCES SUCURSALES (cod_sucursal),
+    CONSTRAINT ahorros_tipo_ahorros_fk FOREIGN KEY (tipo_ahorro)
+        REFERENCES tipos_ahorros (id_tipo_ahorro),
+    CONSTRAINT ahorros_cliente_fk FOREIGN KEY (id_cliente)
+        REFERENCES clientes (id_cliente)
+);
+
+-- 4 Transacciones Depo Reti
+CREATE TABLE transaDepoReti (
+    id_transaccion NUMBER NOT NULL,
+    no_cuenta NUMBER NOT NULL,
+    id_cliente NUMBER NOT NULL,
+    tipo_ahorro NUMBER NOT NULL,
+    cod_sucursal NUMBER NOT NULL,
+    fecha_transac DATE,
+    tipo_transac NUMBER,
+    monto NUMBER(15, 2) DEFAULT 0,
+    fecha_inserccion DATE,
+    status CHAR(2) NOT NULL,
+    usuario VARCHAR2(45),
+    CONSTRAINT tipo_transac_ck CHECK (tipo_transac in(1, 2)),
+    CONSTRAINT status_ck CHECK (status in('PE', 'PR')),
+    CONSTRAINT transaDepoReti_pk PRIMARY KEY ( id_transaccion ), 
+    CONSTRAINT transadeporeti_ahorros_fk FOREIGN KEY (no_cuenta)
+        REFERENCES ahorros(no_cuenta),
+    CONSTRAINT transaDepoReti_cliente_fk FOREIGN KEY (id_cliente)
+        REFERENCES clientes(id_cliente),
+    CONSTRAINT transaDepoReti_tipoahorro_fk FOREIGN KEY (tipo_ahorro)
+        REFERENCES tipos_ahorros(id_tipo_ahorro),    
+    CONSTRAINT transaDepoReti_sucursales_fk FOREIGN KEY ( cod_sucursal )
+        REFERENCES sucursales ( cod_sucursal )
+);
+
+-- drop table transadeporeti;
+
+
+
+-- 5 AUDITORIA
+CREATE TABLE AUDITORIA (
+    id_auditoria NUMBER NOT NULL,
+    id_transaccion NUMBER NOT NULL,
+    id_cliente NUMBER NOT NULL,
+    id_tipo_ahorro NUMBER NOT NULL,
+    tipo_operacion CHAR NOT NULL,
+    tipo_transac NUMBER NOT NULL,
+    tabla VARCHAR2(25),
+    saldo_anterior NUMBER (15, 2),
+    monto_deposito NUMBER (15, 2),
+    saldo_final NUMBER (15, 2),
+    usuario VARCHAR2(42),
+    CONSTRAINT tipo_operacion_ck CHECK ( tipo_operacion IN ('I', 'U', 'D')),
+    CONSTRAINT tipo_transac_ck CHECK ( tipo_transac IN(1, 2)),
+    CONSTRAINT auditoria_pk PRIMARY KEY (id_auditoria),
+    CONSTRAINT auditoria_transaDepoReti_fk FOREIGN KEY (id_transaccion)
+        REFERENCES transaDepoReti (id_transaccion),
+    CONSTRAINT auditoria_cliente_fk FOREIGN KEY (id_cliente)
+        REFERENCES clientes(id_cliente),
+    CONSTRAINT auditoria_tipo_ahorro_fk FOREIGN KEY (id_tipo_ahorro)
+        REFERENCES tipos_ahorros (id_tipo_ahorro)
+);
+
+
+-- 6 ALTER TABLA SUCURSAL
+ALTER TABLE 
+     SUCURSALES 
+     ADD monto_ahorros NUMBER(15,2) DEFAULT 0 NOT NULL; 
+
+
+
+

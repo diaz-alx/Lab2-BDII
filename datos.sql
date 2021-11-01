@@ -32,7 +32,7 @@
     --SUCURSALES
     EXECUTE NuevaSucursal('Primera');
     EXECUTE NuevaSucursal('Segunda');
-    EXECUTE NuevaSucursal('Tercera');
+    EXECUTE NuevaSucursal('Tercera');.
     EXECUTE NuevaSucursal('Cuarta');
 
  
@@ -154,3 +154,23 @@
 
 */
 
+ --Tipos de ahorros. -Descripción, tasa de interes. Falta
+EXECUTE Nuevo_tipoAhorro('Ahorro de Navidad', 6.00);
+EXECUTE Nuevo_tipoAhorro('Ahorro de Corriente', 4.00);
+EXECUTE Nuevo_tipoAhorro('Ahorro escolar', 6.00);
+
+--
+
+
+--id_transac, id_cliente, no_cuenta, , tipo_ahorro, cod_sucursal, fecha_transac
+-- tipo_transac, monto, fecha_inserccion, status, usuario
+EXECUTE insertTransaDeporeti(s1,
+1,
+1,
+1,
+1,
+20.00);
+
+EXECUTE insertTransaDeporeti(1,1,1,22,1,20.00);
+
+EXECUTE insertTransaDeporeti(2,)

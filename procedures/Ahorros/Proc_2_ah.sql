@@ -13,19 +13,19 @@ CREATE OR REPLACE PROCEDURE insertAhorro(
     p_fecha_retiro        IN ahorros.fecha_retiro%TYPE
 )
 IS
-  v_tipo_ahorro NUMBER := p_tipo_ahorro;
+  --v_tipo_ahorro NUMBER := p_tipo_ahorro;
   intSeqVal number(10);
   v_fecha_ap date := SYSDATE;
-  v_saldo_ah number := 0;
-  v_interes NUMBER := 0;
-  v_saldoInteres NUMBER := 0;
+  v_saldo_ah number := 10;
+  v_interes NUMBER;
+  v_saldoInteres NUMBER := 10;
   v_fecha_deposito number := p_fecha_deposito;
   v_fecha_retiro NUMBER := p_fecha_retiro;
   
 BEGIN
 
   select sec_no_cuenta.nextval into intSeqVal from dual;
-  SELECT tasa_interes INTO v_interes FROM TIPOS_AHORROS WHERE id_tipo_ahorro = v_tipo_ahorro;
+  SELECT tasa_interes INTO v_interes FROM TIPOS_AHORROS WHERE id_tipo_ahorro = p_tipo_ahorro;
 
 INSERT INTO AHORROS
 

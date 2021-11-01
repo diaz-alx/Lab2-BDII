@@ -155,22 +155,27 @@
 */
 
  --Tipos de ahorros. -Descripción, tasa de interes. Falta
-EXECUTE Nuevo_tipoAhorro('Ahorro de Navidad', 6.00);
-EXECUTE Nuevo_tipoAhorro('Ahorro de Corriente', 4.00);
-EXECUTE Nuevo_tipoAhorro('Ahorro escolar', 6.00);
+EXECUTE Nuevo_tipoAhorro('Ahorro de Navidad', 0.06);
+EXECUTE Nuevo_tipoAhorro('Ahorro de Corriente', 0.04);
+EXECUTE Nuevo_tipoAhorro('Ahorro escolar', 0.06);
 
 --
+/*--PARAMETROS AHORROS
+1-id_cliente number
+2-tipo_ahorro number
+3-cod_sucursal number 
+4-deposito MENSUAL number
+5-fecha deposito=dia, 
+6-fecha retiro=dia */ 
+EXECUTE insertAhorro(2,1,1,10,15,10);
 
+/*--PARAMETROS TRANSAC
+1-id_cliente number
+2-NO CUENTA number SEC 100 EN 100
+3-TIPO AHORRO number 
+4-SUCURSAL number
+5-TIPO TRANSAC (1=DEPO, 2=RETI), 
+6-MONTO NUMBER */ 
 
---id_transac, id_cliente, no_cuenta, , tipo_ahorro, cod_sucursal, fecha_transac
--- tipo_transac, monto, fecha_inserccion, status, usuario
-EXECUTE insertTransaDeporeti(s1,
-1,
-1,
-1,
-1,
-20.00);
+EXECUTE insertTransaDeporeti(1,200,1,1,1,20);
 
-EXECUTE insertTransaDeporeti(1,1,1,22,1,20.00);
-
-EXECUTE insertTransaDeporeti(2,)

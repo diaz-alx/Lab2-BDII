@@ -18,7 +18,7 @@ IS
 BEGIN 
   select sec_id_transac.nextval into intSeqVal from dual;
 
-IF to_char(CURRENT_DATE, 'dd') = '19' OR to_char(CURRENT_DATE, 'dd') = '30' THEN
+IF to_char(CURRENT_DATE, 'dd') = '1' OR to_char(CURRENT_DATE, 'dd') = '30' THEN
 v_status := 'P';
 ELSE 
 v_status := 'NP';

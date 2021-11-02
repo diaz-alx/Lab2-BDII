@@ -154,6 +154,9 @@
 
 */
 
+
+ --- PARTE II LABORATORIO 7 --
+
  --Tipos de ahorros. -Descripción, tasa de interes. Falta
 EXECUTE Nuevo_tipoAhorro('Ahorro de Navidad', 0.06);
 EXECUTE Nuevo_tipoAhorro('Ahorro de Corriente', 0.04);
@@ -177,5 +180,11 @@ EXECUTE insertAhorro(2,1,2,10,15,10);
 5-TIPO TRANSAC (1=DEPO, 2=RETI), 
 6-MONTO NUMBER */ 
 
-EXECUTE insertTransaDeporeti(1,200,1,1,1,20);
+EXECUTE insertTransaDeporeti(1,100,1,1,1,20);
+EXECUTE insertTransaDeporeti(2,200,2,1,1,100);
+EXECUTE insertTransaDeporeti(2,200,2,1,2,40);
+EXECUTE insertTransaDeporeti(3,300,3,2,1,50);
+EXECUTE insertTransaDeporeti(4,400,1,2,1,80);
+
+
 

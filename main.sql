@@ -722,15 +722,15 @@ EXECUTE insertCliente('800-99-124','KREVITH','SHAW','20-AUG-1981','M',2,'La Glor
 EXECUTE insertCliente('800-99-125','BORIS','FLORES','15-SEP-1992','M',3,'Plaza Camino de Cruces El Dorado', 3);
 EXECUTE insertCliente('800-99-126','SERGIO','ROJAS','25-MAY-1993','M',4,'San francisco calle 70', 4);
 EXECUTE insertCliente('800-99-127','RANDALL','WAYNE','13-APR-1998','M',5,'Obarrio, Calle 56 Este, Edificio Enid', 1);
-EXECUTE insertCliente('800-99-128','JORGE','MOLINA','17-JUL-1987','M',6,'PH Edison Corporate Center Piso 8.', 2);
+/*EXECUTE insertCliente('800-99-128','JORGE','MOLINA','17-JUL-1987','M',6,'PH Edison Corporate Center Piso 8.', 2);
 EXECUTE insertCliente('800-99-129','SEBASTIAN','GONZALEZ','27-DEC-1991','M',7,'Calle 109 Este, entrada de Chanis', 3);
 EXECUTE insertCliente('800-99-130','ANTONIO','FALLAS','12-JUN-1957','M',8,'Calle D El Cangrejo y Eusebio A Morales.', 4);
 --Execute insertCliente('800-99-131','JOSE','FALLAS','09-FEB-2000','M',9,'Calle Williamson Place, La Boca, Ancón', 1);
-EXECUTE insertCliente('800-99-132','PATRICIA','CENTENO','16-JAN-1995','F',10,'Calle 53 El Cangrejo', 2);
+EXECUTE insertCliente('800-99-132','PATRICIA','CENTENO','16-JAN-1995','F',10,'Calle 53 El Cangrejo', 2);*/
 
 
 --PRESTAMOS--ID_CLIENTE, TIPO PRESTAMO, MONTO APROBADO,FECHA_pago, cod_sucursal
-EXECUTE insertPrestamo(1,2,600,15,1);
+/*EXECUTE insertPrestamo(1,2,600,15,1);
 EXECUTE insertPrestamo(1,3,250, 15,2);    
 EXECUTE insertPrestamo(1,4,300,30,3);
 EXECUTE insertPrestamo(2,1,600, 30,2);    
@@ -749,7 +749,296 @@ EXECUTE insertPagos(1,2,100);
 EXECUTE insertPagos(1,2,100); 
 EXECUTE insertPagos(1,2,100);
 EXECUTE insertPagos(1,2,62.79);
-EXECUTE insertPagos(1,2,3.77);
+EXECUTE insertPagos(1,2,3.77);*/
 
 
+----PARTE II DEL LABORATORIO 7------
+
+-- 1 Tipo de ahorros
+CREATE TABLE tipos_ahorros (
+    id_tipo_ahorro NUMBER NOT NULL,
+    descripcion VARCHAR2(30),
+    tasa_interes NUMBER (15,2),
+    CONSTRAINT tp_ahorro_pk PRIMARY KEY (id_tipo_ahorro)
+);
+
+
+-- 2 Tipo de AH Sucursal
+CREATE TABLE TIPO_AH_SUC (
+    cod_sucursal NUMBER NOT NULL,
+    id_tipo_ahorro NUMBER NOT NULL,
+    monto_ahorros NUMBER(15,2) DEFAULT 0,
+    fecha_mod DATE,  
+    CONSTRAINT tipo_ah_suc_pk PRIMARY KEY (cod_sucursal, id_tipo_ahorro),
+    CONSTRAINT tipo_suc_fk FOREIGN KEY (cod_sucursal) 
+    REFERENCES SUCURSALES (cod_sucursal),
+    CONSTRAINT tipo_ah_fk FOREIGN KEY (id_tipo_ahorro) 
+    REFERENCES TIPOS_AHORROS (id_tipo_ahorro)
+);
+
+
+-- 3 Ahorros
+CREATE TABLE ahorros (
+    no_cuenta NUMBER NOT null,
+    id_cliente NUMBER NOT NULL,
+    tipo_ahorro NUMBER NOT NULL,
+    cod_sucursal NUMBER NOT NULL,
+    fecha_apertura DATE,
+    tasa_interes NUMBER(2, 2) DEFAULT 0,
+    deposito_mensual  NUMBER(15, 2) DEFAULT 0, 
+    saldo_ahorro      NUMBER(15, 2) DEFAULT 0, 
+    saldo_interes     NUMBER(15, 2) DEFAULT 0,  
+    usuario        VARCHAR2(45),
+    fecha_deposito NUMBER,
+    fecha_retiro   NUMBER, 
+    fecha_mod      DATE,
+    CONSTRAINT ahorros_pk PRIMARY KEY (no_cuenta),
+    CONSTRAINT ahorros_sucursales_fk FOREIGN KEY (cod_sucursal)
+        REFERENCES SUCURSALES (cod_sucursal),
+    CONSTRAINT ahorros_tipo_ahorros_fk FOREIGN KEY (tipo_ahorro)
+        REFERENCES tipos_ahorros (id_tipo_ahorro),
+    CONSTRAINT ahorros_cliente_fk FOREIGN KEY (id_cliente)
+        REFERENCES clientes (id_cliente)
+);
+
+
+-- 4 Transacciones Depo Reti
+CREATE TABLE transaDepoReti (
+    id_transaccion NUMBER NOT NULL,
+    no_cuenta NUMBER NOT NULL,
+    id_cliente NUMBER NOT NULL,
+    tipo_ahorro NUMBER NOT NULL,
+    cod_sucursal NUMBER NOT NULL,
+    fecha_transac DATE,
+    tipo_transac NUMBER,
+    monto NUMBER(15, 2) DEFAULT 0,
+    fecha_inserccion DATE,
+    status CHAR(2) NOT NULL,
+    usuario VARCHAR2(45),
+    CONSTRAINT transadeporeti_tp_trans_ck CHECK (tipo_transac in(1, 2)),
+    CONSTRAINT status_ck CHECK (status in('PE', 'PR')),
+    CONSTRAINT transaDepoReti_pk PRIMARY KEY ( id_transaccion ), 
+    CONSTRAINT transadeporeti_ahorros_fk FOREIGN KEY (no_cuenta)
+        REFERENCES ahorros(no_cuenta),
+    CONSTRAINT ti_transaDepoRecliente_fk FOREIGN KEY (id_cliente)
+        REFERENCES clientes(id_cliente),
+    CONSTRAINT transaDepoReti_tipoahorro_fk FOREIGN KEY (tipo_ahorro)
+        REFERENCES tipos_ahorros(id_tipo_ahorro),    
+    CONSTRAINT transaDepoReti_sucursales_fk FOREIGN KEY ( cod_sucursal )
+        REFERENCES sucursales ( cod_sucursal )
+);
+
+
+-- 5 AUDITORIA
+CREATE TABLE AUDITORIA (
+    id_auditoria NUMBER NOT NULL,
+    id_transaccion NUMBER NOT NULL,
+    id_cliente NUMBER NOT NULL,
+    id_tipo_ahorro NUMBER NOT NULL,
+    tipo_operacion CHAR NOT NULL,
+    tipo_transac NUMBER NOT NULL,
+    tabla VARCHAR2(25),
+    saldo_anterior NUMBER (15, 2),
+    monto_deposito NUMBER (15, 2),
+    saldo_final NUMBER (15, 2),
+    usuario VARCHAR2(42),
+    CONSTRAINT tipo_operacion_ck CHECK ( tipo_operacion IN ('I', 'U', 'D')),
+    CONSTRAINT auditoria_tipo_transac_ck CHECK ( tipo_transac IN(1, 2)),
+    CONSTRAINT auditoria_pk PRIMARY KEY (id_auditoria),
+    CONSTRAINT auditoria_transaDepoReti_fk FOREIGN KEY (id_transaccion)
+        REFERENCES transaDepoReti (id_transaccion),
+    CONSTRAINT auditoria_cliente_fk FOREIGN KEY (id_cliente)
+        REFERENCES clientes(id_cliente),
+    CONSTRAINT auditoria_tipo_ahorro_fk FOREIGN KEY (id_tipo_ahorro)
+        REFERENCES tipos_ahorros (id_tipo_ahorro)
+);
+
+
+-- 6 ALTER TABLA SUCURSAL
+ALTER TABLE 
+     SUCURSALES 
+     ADD monto_ahorros NUMBER(15,2) DEFAULT 0 NOT NULL; 
+
+
+
+--- SECUENCIAS LABORATORIO 7 ---
+
+--SECUENCIAS DE ID TIPO AHORRO --
+CREATE SEQUENCE sec_tipo_aho
+INCREMENT BY 1
+START WITH 1
+MAXVALUE 99999
+MINVALUE 1;
+
+--SECUENCIAS DE NUMERO CUENTA AHORRO
+CREATE SEQUENCE sec_no_cuenta
+INCREMENT BY 100
+START WITH 100
+MAXVALUE 99999
+MINVALUE 100;
+
+--SECUENCIAS DE ID TRANSACCION DEPOSITO RETIRO
+CREATE SEQUENCE sec_transacdeporeti
+INCREMENT BY 1
+START WITH 1
+MAXVALUE 99999
+MINVALUE 1;
+
+--SECUENCIAS DE AUDITORIA-
+CREATE SEQUENCE sec_cod_aut
+INCREMENT BY 1
+START WITH 1
+MAXVALUE 99999
+MINVALUE 1;
+
+--- FUNCIONES
+
+
+
+
+-- PROCEDIMIENTOS PARA AHORROS -----
+
+--TIPOS AHORRO
+-- Hace falta
+CREATE OR REPLACE PROCEDURE Nuevo_tipoAhorro(
+    p_ahorro_descripcion  IN tipos_ahorros.descripcion%TYPE,
+    p_ahorro_tasa_interes  IN tipos_ahorros.tasa_interes%TYPE
+    )
+IS
+intSeqVal number(10);
+BEGIN
+    select sec_tipo_aho.nextval into intSeqVal from dual;
+    INSERT into tipos_ahorros (id_tipo_ahorro, descripcion, tasa_interes)
+    VALUES (intSeqVal, p_ahorro_descripcion, p_ahorro_tasa_interes);
+    COMMIT;
+EXCEPTION
+   WHEN DUP_VAL_ON_INDEX THEN
+       DBMS_OUTPUT.PUT_LINE('💣 Error: El tipo de ahorro ya existe.');
+END Nuevo_tipoAhorro;
+/
+
+-- Insertar ahorros
+/*
+Procedimiento almacenado para la apertura o inserción de los ahorros aprobados
+con toda la información correspondiente..
+*/
+
+
+CREATE OR REPLACE PROCEDURE insertAhorro(
+    p_id_cliente            IN ahorros.id_cliente%TYPE,
+    p_tipo_ahorro     IN ahorros.tipo_ahorro%TYPE,
+    p_cod_sucursal        IN ahorros.cod_sucursal%TYPE,
+    p_depo_mensual          IN ahorros.deposito_mensual%TYPE,
+    p_fecha_deposito            IN ahorros.fecha_deposito%TYPE,
+    p_fecha_retiro        IN ahorros.fecha_retiro%TYPE
+)
+IS
+  intSeqVal number(10);
+  v_fecha_ap date := SYSDATE;
+  v_saldo_ah number := 10;
+  v_interes NUMBER;
+  v_saldoInteres NUMBER := 10;
+  v_fecha_deposito number := p_fecha_deposito;
+  v_fecha_retiro NUMBER := p_fecha_retiro;
+  
+BEGIN
+
+  select sec_no_cuenta.nextval into intSeqVal from dual;
+  SELECT tasa_interes INTO v_interes FROM TIPOS_AHORROS WHERE id_tipo_ahorro = p_tipo_ahorro;
+
+INSERT INTO AHORROS
+
+VALUES (
+    intSeqVal,
+    p_id_cliente,
+    p_tipo_ahorro,
+    p_cod_sucursal,
+    to_date(v_fecha_ap,'DD-MM-YYY HH24:MI:SS'),
+    v_interes,
+    p_depo_mensual,
+    v_saldo_ah,
+    v_saldoInteres,
+    user,
+    v_fecha_deposito,
+    v_fecha_retiro,
+    to_date(v_fecha_ap,'DD-MM-YYY HH24:MI:SS')
+    );
+
+COMMIT;
+EXCEPTION
+   WHEN DUP_VAL_ON_INDEX THEN
+       DBMS_OUTPUT.PUT_LINE('💣 Error: El numero de cuenta ya existe.');
+END insertAhorro;
+/
+
+
+-- INSERT TRANSADEPORETI --
+
+CREATE OR REPLACE PROCEDURE insertTransaDeporeti (
+  p_id_cliente IN transaDepoReti.id_cliente%TYPE,
+  p_no_cuenta IN transaDepoReti.no_cuenta%TYPE, 
+  p_tipo_ahorro IN transaDepoReti.tipo_ahorro%TYPE,
+  p_cod_sucursal IN transaDepoReti.cod_sucursal%TYPE,
+  p_tipo_transac IN transaDepoReti.tipo_transac%TYPE,
+  p_monto IN transaDepoReti.monto%TYPE
+)
+IS
+  intSeqVal number(10);
+  --v_fecha_ap date := SYSDATE;
+  --v_usuario VARCHAR2(45) := USER;
+  v_status CHAR(2) := 'PE';
+  v_monto NUMBER(15,2) := p_monto;
+  --v_exception VARCHAR2(250) := EXCEPTION;
+BEGIN
+  select sec_transacdeporeti.nextval into intSeqVal from dual;
+
+-- CONDICION DE TRANSACCION 1= DEPOSITO, 2=RETIRO solo de cuenta corriente se puede retirar.
+
+IF p_tipo_ahorro = 2 AND (p_tipo_transac = 1 OR  p_tipo_transac =2 ) THEN
+  INSERT INTO transaDepoReti
+  VALUES(
+    intSeqVal,
+    p_no_cuenta,
+    p_id_cliente,
+    p_tipo_ahorro,
+    p_cod_sucursal,
+    --to_date(v_fecha_ap,'DD-MM-YYY HH24:MI:SS'),
+    SYSDATE,
+    p_tipo_transac,
+    v_monto,
+    --to_date(v_fecha_ap,'DD-MM-YYY HH24:MI:SS'),
+    SYSDATE,
+    v_status,
+    user
+  );
+
+ELSIF (p_tipo_ahorro = 1 OR p_tipo_ahorro = 3) AND p_tipo_transac = 1 THEN
+  INSERT INTO transaDepoReti
+  VALUES(
+    intSeqVal,
+    p_no_cuenta,
+    p_id_cliente,
+    p_tipo_ahorro,
+    p_cod_sucursal,
+    --to_date(v_fecha_ap,'DD-MM-YYY HH24:MI:SS'),
+    SYSDATE,
+    p_tipo_transac,
+    v_monto,
+    --to_date(v_fecha_ap,'DD-MM-YYY HH24:MI:SS'),
+    SYSDATE,
+    v_status,
+    user
+  );
+ELSE
+  DBMS_OUTPUT.PUT_LINE('💣 Error: El tiempo de retiro no puede realizarse en este momento. Verifique su tipo de cuenta.');
+
+
+
+END IF;
+COMMIT;
+EXCEPTION
+   WHEN DUP_VAL_ON_INDEX THEN
+       DBMS_OUTPUT.PUT_LINE('💣 Error: La transacción ya existe.');
+END insertTransaDeporeti;
+/
 

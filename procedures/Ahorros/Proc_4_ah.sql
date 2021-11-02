@@ -55,6 +55,7 @@ IS
     v_tipo_ahorro NUMBER; 
     v_cod_sucursal NUMBER;
     v_fecha_transac date;
+    v_tipo_transac NUMBER;
     v_monto NUMBER(15, 2) DEFAULT 0;
     v_status char(2) := 'PE'; -- SOLO SE PROCESARAN LOS PENDIENTES
 
@@ -82,44 +83,41 @@ OPEN c_transaDepoReti;
         v_tipo_ahorro,
         v_cod_sucursal,
         v_fecha_transac,
+        v_tipo_transac,
         v_monto;
     EXIT
     WHEN c_transadeporeti%NOTFOUND;
     
-    --FALTA AGREGAR UNA CONDICION CUNADO EL SALDO LLEGE A CERO
+    -- CONDICION DE TRANSACCION 1= DEPOSITO, 2=RETIRO
+
+    IF  v_tipo_transac = 1 THEN
+    UPDATE AHORROS
+    SET 
+    saldo_ahorro = calcularInteres(v_tipo_prestamo,saldo_actual) + v_monto_pago,
+    saldo_interes = saldo_interes + v_saldo_ah,
+    fecha_mod = SYSDATE
+    WHERE
+    no_cuenta = v_no_cuenta;
+
+    ELSIF v_tipo_transac = 2 THEN
     UPDATE AHORROS
     SET 
     saldo_ahorro = calcularInteres(v_tipo_prestamo,saldo_actual) - v_monto_pago,
-    saldo_interes = saldo_interes + v_saldo_ah,
-    interes_pagado = interes_pagado + (calcularInteres(v_tipo_prestamo,saldo_actual) - SALDO_ACTUAL)
+    saldo_interes = saldo_interes + v_saldo_ah
+    fecha_mod = SYSDATE
     WHERE
-    id_cliente = v_id_cliente
-    AND
-    cod_tipo_prestamo = v_tipo_prestamo;
+    no_cuenta = v_no_cuenta;
+    END IF;
 
-    UPDATE TIPOS_PRE_SUCURSAL
-    SET MONTO_PRESTA = MONTO_PRESTA - v_monto_pago
-    WHERE
-    cod_sucursal = v_cod_sucursal
-    AND
-    cod_t_prestam = v_tipo_prestamo;
-
-    UPDATE SUCURSALES
-    SET MONTO_PRESTAMO = MONTO_PRESTAMO - v_monto_pago               
-    WHERE
-    cod_sucursal = v_cod_sucursal;
-
-    --ACTUALIZA EL ESTADO DEL PAGO PARA QUE NO SE VUELVA A REPETIR
-    UPDATE TRANSACPAGOS
+    --ACTUALIZA EL ESTADO DEL DEPOSITO O RETIRO PARA QUE NO SE VUELVA A REPETIR
+    UPDATE TRANSADEPORETI
     SET
     status = 'PR'
     WHERE
     id_transaccion = v_id_transac;
 
     END LOOP;
-CLOSE c_transacpagos;
+CLOSE c_transadeporeti;
 
 END;
 /
-
--- TODO Hace falta colocar los insert para los pagos

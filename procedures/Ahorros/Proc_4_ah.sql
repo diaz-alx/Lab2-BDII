@@ -121,7 +121,3 @@ CLOSE c_transadeporeti;
 
 END;
 /
-<<<<<<< HEAD
-=======
-
->>>>>>> 909497cdbf3ca594d4371b03f8b3f0727cf9486f

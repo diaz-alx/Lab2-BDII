@@ -18,13 +18,13 @@ IS
   --v_usuario VARCHAR2(45) := USER;
   v_status CHAR(2) := 'PE';
   v_monto NUMBER(15,2) := p_monto;
-  v_expection VARCHAR2(250) = EXCEPTION;
+  --v_exception VARCHAR2(250) := EXCEPTION;
 BEGIN
   select sec_transacdeporeti.nextval into intSeqVal from dual;
 
 -- CONDICION DE TRANSACCION 1= DEPOSITO, 2=RETIRO solo de cuenta corriente se puede retirar.
 
-IF p_tipo_ahorro = 2 AND (p_tipo_transac = 1 OR 2)  THEN
+IF p_tipo_ahorro = 2 AND (p_tipo_transac = 1 OR  p_tipo_transac =2 ) THEN
   INSERT INTO transaDepoReti
   VALUES(
     intSeqVal,
@@ -42,7 +42,7 @@ IF p_tipo_ahorro = 2 AND (p_tipo_transac = 1 OR 2)  THEN
     user
   );
 
-ELSIF (p_tipo ahorro = 1 OR 3) AND p_tipo_transac = 1 THEN
+ELSIF (p_tipo_ahorro = 1 OR p_tipo_ahorro = 3) AND p_tipo_transac = 1 THEN
   INSERT INTO transaDepoReti
   VALUES(
     intSeqVal,
@@ -60,8 +60,9 @@ ELSIF (p_tipo ahorro = 1 OR 3) AND p_tipo_transac = 1 THEN
     user
   );
 ELSE
+  DBMS_OUTPUT.PUT_LINE('💣 Error: El tiempo de retiro no puede realizarse en este momento. Verifique su tipo de cuenta.');
 
-v_exeption = ;
+
 
 END IF;
 COMMIT;

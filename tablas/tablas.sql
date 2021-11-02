@@ -250,9 +250,6 @@ CREATE TABLE transaDepoReti (
         REFERENCES sucursales ( cod_sucursal )
 );
 
-drop table transadeporeti;
-
-
 
 -- 5 AUDITORIA
 CREATE TABLE AUDITORIA (

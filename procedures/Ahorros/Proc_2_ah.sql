@@ -54,7 +54,7 @@ END insertAhorro;
 
 
 --PARAMETROS id_cliente, tipo_ahorro, cod_sucursal, monto deposito, fecha deposito=dia, fecha retiro=dia 
-EXECUTE insertAhorro(2,1,22,10,15,10);
+EXECUTE insertAhorro(2,1,22,10,15,10); 
 
 EXECUTE insertAhorro(2,
 1,

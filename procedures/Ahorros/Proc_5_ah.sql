@@ -42,7 +42,7 @@ IS
     WHEN c_ahorros%NOTFOUND;
 
     -- IF to_char(CURRENT_DATE, 'dd') = '01' OR to_char(CURRENT_DATE, 'dd') = '15' THEN
-    IF to_char(CURRENT_DATE, 'dd') = '05' THEN
+    IF to_char(CURRENT_DATE, 'dd') = '06' THEN
     --IF v_tipo_ahorro = 2
     --THEN
     UPDATE AHORROS

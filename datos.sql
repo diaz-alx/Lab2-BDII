@@ -170,7 +170,13 @@ EXECUTE Nuevo_tipoAhorro('Ahorro escolar', 0.06);
 4-deposito MENSUAL number
 5-fecha deposito=dia, 
 6-fecha retiro=dia */ 
+EXECUTE insertAhorro(1,1,1,10,15,10);
 EXECUTE insertAhorro(2,1,2,10,15,10);
+EXECUTE insertAhorro(3,2,1,100,15,10);
+EXECUTE insertAhorro(4,3,2,200,15,10);
+EXECUTE insertAhorro(5,1,2,300,15,10);
+
+
 
 /*--PARAMETROS TRANSAC
 1-id_cliente number
@@ -181,10 +187,11 @@ EXECUTE insertAhorro(2,1,2,10,15,10);
 6-MONTO NUMBER */ 
 
 EXECUTE insertTransaDeporeti(1,100,1,1,1,20);
-EXECUTE insertTransaDeporeti(2,200,2,1,1,100);
-EXECUTE insertTransaDeporeti(2,200,2,1,2,40);
-EXECUTE insertTransaDeporeti(3,300,3,2,1,50);
-EXECUTE insertTransaDeporeti(4,400,1,2,1,80);
+EXECUTE insertTransaDeporeti(2,200,2,1,1,139);
+EXECUTE insertTransaDeporeti(3,300,2,1,1,100);
+EXECUTE insertTransaDeporeti(3,300,2,1,2,40);
+EXECUTE insertTransaDeporeti(4,400,3,2,1,50);
+EXECUTE insertTransaDeporeti(5,500,1,2,1,80);
 
 
 

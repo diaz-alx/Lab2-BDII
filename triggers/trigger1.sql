@@ -4,19 +4,28 @@ ahorros.
 */
 
 
-CREATE OR REPLACE TRIGGER AHORROS 
+CREATE OR REPLACE TRIGGER CARGATIPOAHORROSUC 
 -- Inicio de la sección declarativa
-  BEFORE INSERT OR UPDATE OF monto_ahorros
-  ON AHORROS
+  AFTER INSERT OR DELETE
+  ON TIPOS_AHORROS
   FOR EACH ROW
 
-
 BEGIN
--- Inicio de la sección ejecutable
-  UPDATE monto_ahorros 
-    SET monto_ahorros = new_monto_ahorros
+  IF INSERTING THEN 
+    INSERT INTO TIPO_AH_SUC(
+      cod_sucursal,
+      id_tipo_ahorro)
+      SELECT :new.cod_sucursal , :new.id_tipo_ahorro
+      FROM dual
+      WHERE NOT EXISTS(
+        SELECT * FROM SUCURSALES
+        WHERE (COD_SUCURSAL = :new.COD_SUCURSAL) 
+      );
+    
+  END IF;
+EXCEPTION WHEN dup_val_on_index THEN
+  null;
 
-EXCEPTION
--- Inicio de la sección de excepciones
+END CARGATIPOAHORROSUC;
+/
 
-END AHORROS;

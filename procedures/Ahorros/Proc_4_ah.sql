@@ -4,15 +4,18 @@ ahorro correspondientes. Deberá implementar un cursor que busque el
 depósitos/retiros insertados en la tabla uno a uno y los vaya actualizando en la
 tabla de ahorros de cada cliente (proceso en lote o proceso en línea usted decide).
 De la siguiente forma:
+
 * Si el tipo de ahorro es navidad o escolar por cada deposito realizado debe
 calcular el interés que corresponde montodeposito * tasade interes% que
 calculo que lo debe realizar una función diseñada previamente. El
 procedimiento debe actualizar el saldo de ahorro y el saldo interés de la
 cuenta de ahorro de los clientes
+
 * Si el tipo de ahorro es corriente simplemente se realizar la aplicación del
 depósito o retiro a la cuenta de ahorro del cliente correspondiente. De las
 únicas cuentas que se puede realizar retiros es de la cuenta de ahorro
 corriente por lo tanto el procedimiento debe controlar esta situación.
+
 */
 
 
@@ -59,7 +62,7 @@ IS
     v_monto NUMBER(15, 2) DEFAULT 0;
     v_status char(2) := 'PE'; -- SOLO SE PROCESARAN LOS PENDIENTES
 
-CURSOR c_transacDepoReti IS
+CURSOR c_transaDepoReti IS
     SELECT
         id_transaccion,
         no_cuenta, 
@@ -74,6 +77,11 @@ CURSOR c_transacDepoReti IS
         status = v_status;
 BEGIN
 
+--- SI TIPO = CORRIENTE NO SE REALIZA CALCULO DE INTERES EN EL SALDO Y EL INTERES.
+---- SI TIPO = NAVIDAD Y ESCOLAR SI SE LE REALIZA CALCULO DE INTERES EN EL SALDO.
+
+
+--IF to_char(CURRENT_DATE, 'dd') = '1' OR to_char(CURRENT_DATE, 'dd') = '15' THEN
 OPEN c_transaDepoReti;
     LOOP
     FETCH c_transaDepoReti INTO
@@ -88,22 +96,29 @@ OPEN c_transaDepoReti;
     EXIT
     WHEN c_transadeporeti%NOTFOUND;
     
+    -- TIPO DE AHORRO,Navidad 1, Corriente 2, Escolar 3
     -- CONDICION DE TRANSACCION 1= DEPOSITO, 2=RETIRO
-
-    IF  v_tipo_transac = 1 THEN
+    IF v_tipo_ahorro = 2
+        -- No calcular el interes
+    ELSE 
+        -- Si calcular el interes
+    -- Actualizar en la tabla
+    -- Terminar y a mimir
+    
+    --IF  v_tipo_transac = 1 THEN
     UPDATE AHORROS
     SET 
-    saldo_ahorro = calcularInteres(v_tipo_prestamo,saldo_actual) + v_monto_pago,
-    saldo_interes = saldo_interes + v_saldo_ah,
+    saldo_ahorro = calcularInteres(v_tipo_ahorro,saldo_ahorro) + v_monto,
+    saldo_interes = saldo_interes + (calcularInteres(v_tipo_ahorro,saldo_ahorro) - saldo_ahorro),
     fecha_mod = SYSDATE
     WHERE
     no_cuenta = v_no_cuenta;
 
     ELSIF v_tipo_transac = 2 THEN
     UPDATE AHORROS
-    SET 
-    saldo_ahorro = calcularInteres(v_tipo_prestamo,saldo_actual) - v_monto_pago,
-    saldo_interes = saldo_interes + v_saldo_ah
+    SET     
+    saldo_ahorro = saldo_ahorro - v_monto,
+    -- saldo_interes = saldo_interes + calcularInteres(v_tipo_ahorro,saldo_ahorro) - saldo_ahorro,
     fecha_mod = SYSDATE
     WHERE
     no_cuenta = v_no_cuenta;
@@ -116,8 +131,16 @@ OPEN c_transaDepoReti;
     WHERE
     id_transaccion = v_id_transac;
 
+
     END LOOP;
 CLOSE c_transadeporeti;
 
-END;
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('💣 Error: Los datos suministrados no existen');
+
+END actualizarAhorros;
 /
+
+-- INSERCION DE DATOS
+EXECUTE insertTransaDeporeti(2,200,2,1,1,139);

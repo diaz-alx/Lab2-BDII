@@ -10,7 +10,8 @@ BEGIN
                               'FUNCTION',
                               'SEQUENCE',
                               'SYNONYM',
-                              'PACKAGE BODY'
+                              'PACKAGE BODY',
+                              'TRIGGER'
                              ))
    LOOP
       BEGIN

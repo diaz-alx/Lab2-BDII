@@ -1277,3 +1277,4 @@ EXECUTE insertTransaDeporeti(1,100,1,1,1,100);
 EXECUTE actualizarAhorros;
 
 EXECUTE calcularInteresDeCorriente;
+

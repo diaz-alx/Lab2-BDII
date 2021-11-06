@@ -6,26 +6,34 @@ ahorros.
 
 CREATE OR REPLACE TRIGGER CARGATIPOAHORROSUC 
 -- Inicio de la sección declarativa
-  AFTER INSERT OR DELETE
-  ON TIPOS_AHORROS
+  AFTER UPDATE OF saldo_ahorro
+  ON AHORROS
   FOR EACH ROW
 
 BEGIN
-  IF INSERTING THEN 
-    INSERT INTO TIPO_AH_SUC(
-      cod_sucursal,
-      id_tipo_ahorro)
-      SELECT :new.cod_sucursal , :new.id_tipo_ahorro
-      FROM dual
-      WHERE NOT EXISTS(
-        SELECT * FROM SUCURSALES
-        WHERE (COD_SUCURSAL = :new.COD_SUCURSAL) 
-      );
-    
-  END IF;
+      IF to_char(CURRENT_DATE, 'dd') = '06' AND :NEW.tipo_ahorro = 2 
+      THEN
+       UPDATE SUCURSALES
+        SET monto_ahorros = monto_ahorros + :NEW.saldo_interes
+        WHERE COD_SUCURSAL = :NEW.COD_SUCURSAL;
+      ELSE
+       UPDATE SUCURSALES
+        SET monto_ahorros = monto_ahorros + :NEW.saldo_ahorro
+      WHERE COD_SUCURSAL = :NEW.COD_SUCURSAL;
+      END IF;
+ 
 EXCEPTION WHEN dup_val_on_index THEN
   null;
 
 END CARGATIPOAHORROSUC;
 /
 
+drop trigger CARGATIPOAHORROSUC;
+
+
+
+UPDATE TIPOS_PRE_SUCURSAL SET MONTO_PRESTA = MONTO_PRESTA + v_monto_prestamo
+    WHERE cod_sucursal = p_no_sucursal and cod_t_prestam = p_cod_tipo_prestamo; 
+
+UPDATE SUCURSALES SET MONTO_PRESTAMO = MONTO_PRESTAMO + v_monto_prestamo
+    WHERE cod_sucursal = p_no_sucursal; 

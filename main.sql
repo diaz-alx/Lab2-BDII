@@ -1169,6 +1169,62 @@ END actualizarAhorros;
 /
 
 
+---PROCEDIMIENTO 5 -- 
+CREATE OR REPLACE PROCEDURE calcularInteresDeCorriente
+IS
+  v_no_cuenta NUMBER;
+  v_tipo_ahorro NUMBER := 2;
+  v_saldo_ahorro NUMBER;
+  v_saldo_interes NUMBER;
+
+
+  CURSOR c_ahorros IS
+    SELECT
+        no_cuenta,
+        tipo_ahorro, 
+        saldo_ahorro, 
+        saldo_interes
+    FROM AHORROS
+    WHERE
+        tipo_ahorro = v_tipo_ahorro;
+  BEGIN
+  
+
+  OPEN c_ahorros;
+    LOOP 
+    FETCH c_ahorros INTO
+      v_no_cuenta,
+      v_tipo_ahorro,
+      v_saldo_ahorro,
+      v_saldo_interes;
+    EXIT 
+    WHEN c_ahorros%NOTFOUND;
+
+    -- IF to_char(CURRENT_DATE, 'dd') = '01' OR to_char(CURRENT_DATE, 'dd') = '15' THEN
+    IF to_char(CURRENT_DATE, 'dd') = '05' THEN
+    --IF v_tipo_ahorro = 2
+    --THEN
+    UPDATE AHORROS
+    SET
+    saldo_interes = (calcularInteresDelAhorro(v_tipo_ahorro,v_saldo_ahorro) - v_saldo_ahorro),
+    saldo_ahorro = calcularInteresDelAhorro(v_tipo_ahorro,v_saldo_ahorro),
+    fecha_mod = SYSDATE
+    WHERE no_cuenta = v_no_cuenta;
+    END IF;
+
+    END LOOP;
+
+  CLOSE c_ahorros;
+
+  EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('💣 Error: Los datos suministrados no existen');
+
+  END calcularInteresDeCorriente;
+/
+
+
+
 
 --Execute
 EXECUTE Nuevo_tipoAhorro('Ahorro de Navidad', 0.06);
@@ -1215,10 +1271,9 @@ EXECUTE insertTransaDeporeti(5,500,1,2,1,120);
 
 EXECUTE insertTransaDeporeti(5,500,1,2,1,150);
 
-EXECUTE insertTransaDeporeti(3,300,2,1,1,200);
-
 EXECUTE insertTransaDeporeti(1,100,1,1,1,100);
 
 
 EXECUTE actualizarAhorros;
 
+EXECUTE calcularInteresDeCorriente;

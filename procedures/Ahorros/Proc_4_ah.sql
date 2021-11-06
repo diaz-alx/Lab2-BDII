@@ -80,8 +80,6 @@ BEGIN
 
 --- SI TIPO = CORRIENTE NO SE REALIZA CALCULO DE INTERES EN EL SALDO Y EL INTERES.
 ---- SI TIPO = NAVIDAD Y ESCOLAR SI SE LE REALIZA CALCULO DE INTERES EN EL SALDO.
-
-
 --IF to_char(CURRENT_DATE, 'dd') = '1' OR to_char(CURRENT_DATE, 'dd') = '15' THEN
 OPEN c_transaDepoReti;
     LOOP
@@ -99,27 +97,27 @@ OPEN c_transaDepoReti;
     
     -- TIPO DE AHORRO,Navidad 1, Corriente 2, Escolar 3
     -- CONDICION DE TRANSACCION 1= DEPOSITO, 2=RETIRO
-
-    IF  v_tipo_transac = 1 AND v_tipo_ahorro = 2 THEN
-        -- No calcular el interes
-        UPDATE AHORROS
-        SET
-        saldo_ahorro = saldo_ahorro + v_monto,
-        fecha_mod = SYSDATE
-        WHERE
-        no_cuenta = v_no_cuenta;
-
-    ELSIF v_tipo_transac = 1 AND (v_tipo_ahorro = 1 OR v_tipo_ahorro = 3) THEN
-        UPDATE AHORROS
-        SET 
-        saldo_ahorro = calcularInteresDelAhorro(v_tipo_ahorro,saldo_ahorro) + v_monto,
-        saldo_interes = saldo_interes + (calcularInteresDelAhorro(v_tipo_ahorro,saldo_ahorro) - saldo_ahorro),
-        fecha_mod = SYSDATE
-        WHERE
-        no_cuenta = v_no_cuenta;
-
-    --ENTRA COMO RETIRO
-    ELSIF v_tipo_transac = 2 THEN
+    SELECT 
+    IF v_tipo_transac = 1
+    THEN
+        IF v_tipo_ahorro = 2 
+        THEN
+            UPDATE AHORROS
+            SET
+            saldo_ahorro = saldo_ahorro + v_monto,
+            fecha_mod = SYSDATE
+            WHERE
+            no_cuenta = v_no_cuenta;
+        ELSE
+            UPDATE AHORROS
+            SET 
+            saldo_ahorro = calcularInteresDelAhorro(v_tipo_ahorro,v_monto) + saldo_ahorro,
+            saldo_interes = saldo_interes + (calcularInteresDelAhorro(v_tipo_ahorro,v_monto) - v_monto),
+            fecha_mod = SYSDATE
+            WHERE
+            no_cuenta = v_no_cuenta;
+        END IF;
+    ELSE
         UPDATE AHORROS
         SET     
         saldo_ahorro = saldo_ahorro - v_monto,
@@ -146,7 +144,5 @@ EXCEPTION
 END actualizarAhorros;
 /
 
--- INSERCION DE DATOS
---EXECUTE insertTransaDeporeti(2,200,2,1,1,139);
  
 EXECUTE actualizarAhorros;

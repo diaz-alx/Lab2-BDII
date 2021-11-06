@@ -67,7 +67,7 @@ ELSE
 END IF;
 COMMIT;
 EXCEPTION
-   WHEN DUP_VAL_ON_INDEX THEN
-       DBMS_OUTPUT.PUT_LINE('💣 Error: La transacción ya existe.');
+   WHEN NO_DATA_FOUND THEN
+       DBMS_OUTPUT.PUT_LINE('💣 Error: La transacción no existe.');
 END insertTransaDeporeti;
 /

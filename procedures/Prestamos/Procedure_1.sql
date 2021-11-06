@@ -126,6 +126,21 @@ FOR v_counter IN 1..5 LOOP
     );
     COMMIT;
     END LOOP;
+
+FOR v_counter IN 1..3 LOOP
+    INSERT INTO TIPO_AH_SUC(
+        COD_SUCURSAL,
+        ID_TIPO_AHORRO,
+        MONTO_AHORROS,
+        fecha_mod)
+     VALUES(
+        intSeqVal,
+        v_counter,
+        v_monto,
+        to_date(sysdate,'DD-MM-YY')
+    );
+    COMMIT;
+    END LOOP;
     
 EXCEPTION
    WHEN DUP_VAL_ON_INDEX THEN

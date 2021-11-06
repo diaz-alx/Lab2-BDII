@@ -1044,8 +1044,129 @@ END insertTransaDeporeti;
 /
 
 -- ------------------ Proc 4 ---------------------------- --
+CREATE OR REPLACE FUNCTION calcularInteresDelAhorro(
+    p_tipoInteres number,
+    p_monto number
+)
+RETURN NUMBER IS
+   V_interes_calculado NUMBER;
+   v_monto NUMBER := p_monto;
+   v_interes NUMBER;
+   --v_exeption EXCEPTION;
+BEGIN
+    -- ASIGNA EL VALOR DEL INTERES EN BASE AL TIPO DE AHORRO
+    IF p_tipoInteres = 1 THEN
+    v_interes := 0.06;
+    ELSIF p_tipoInteres = 2 THEN
+    v_interes := 0.04;
+    ELSIF p_tipoInteres = 3 THEN
+    v_interes := 0.06;
+    END IF;
+    -- Interes calculado mediante el valor depositado y el tipo de interes
+    v_interes_calculado := (v_monto * v_interes) + v_monto;
+    
+ 
+   RETURN v_interes_calculado;
+    EXCEPTION
+   WHEN NO_DATA_FOUND THEN
+       DBMS_OUTPUT.PUT_LINE('💣 Error: El préstamo no ha sido encontrado.');
+
+END calcularInteresDelAhorro;
+/
 
 
+CREATE OR REPLACE PROCEDURE actualizarAhorros
+IS
+    v_id_transac NUMBER;
+    v_no_cuenta NUMBER;
+    v_id_cliente NUMBER;
+    v_tipo_ahorro NUMBER; 
+    v_cod_sucursal NUMBER;
+    v_fecha_transac date;
+    v_tipo_transac NUMBER;
+    v_monto NUMBER(15, 2) DEFAULT 0;
+    v_status char(2) := 'PE'; -- SOLO SE PROCESARAN LOS PENDIENTES
+
+CURSOR c_transaDepoReti IS
+    SELECT
+        id_transaccion,
+        no_cuenta, 
+        id_cliente, 
+        tipo_ahorro,
+        cod_sucursal,
+        fecha_transac,
+        tipo_transac,
+        monto
+    FROM transaDepoReti
+    WHERE
+        status = v_status;
+BEGIN
+
+--- SI TIPO = CORRIENTE NO SE REALIZA CALCULO DE INTERES EN EL SALDO Y EL INTERES.
+---- SI TIPO = NAVIDAD Y ESCOLAR SI SE LE REALIZA CALCULO DE INTERES EN EL SALDO.
+--IF to_char(CURRENT_DATE, 'dd') = '1' OR to_char(CURRENT_DATE, 'dd') = '15' THEN
+OPEN c_transaDepoReti;
+    LOOP
+    FETCH c_transaDepoReti INTO
+        v_id_transac,
+        v_no_cuenta,
+        v_id_cliente,
+        v_tipo_ahorro,
+        v_cod_sucursal,
+        v_fecha_transac,
+        v_tipo_transac,
+        v_monto;
+    EXIT
+    WHEN c_transadeporeti%NOTFOUND;
+    
+    -- TIPO DE AHORRO,Navidad 1, Corriente 2, Escolar 3
+    -- CONDICION DE TRANSACCION 1= DEPOSITO, 2=RETIRO
+
+    IF v_tipo_transac = 1
+    THEN
+        IF v_tipo_ahorro = 2 
+        THEN
+            UPDATE AHORROS
+            SET
+            saldo_ahorro = saldo_ahorro + v_monto,
+            fecha_mod = SYSDATE
+            WHERE
+            no_cuenta = v_no_cuenta;
+        ELSE
+            UPDATE AHORROS
+            SET 
+            saldo_ahorro = calcularInteresDelAhorro(v_tipo_ahorro,v_monto) + saldo_ahorro,
+            saldo_interes = saldo_interes + (calcularInteresDelAhorro(v_tipo_ahorro,v_monto) - v_monto),
+            fecha_mod = SYSDATE
+            WHERE
+            no_cuenta = v_no_cuenta;
+        END IF;
+    ELSE
+        UPDATE AHORROS
+        SET     
+        saldo_ahorro = saldo_ahorro - v_monto,
+        fecha_mod = SYSDATE
+        WHERE
+        no_cuenta = v_no_cuenta;
+    END IF;
+
+    --ACTUALIZA EL ESTADO DEL DEPOSITO O RETIRO PARA QUE NO SE VUELVA A REPETIR
+    UPDATE TRANSADEPORETI
+    SET
+    status = 'PR'
+    WHERE
+    id_transaccion = v_id_transac;
+
+
+    END LOOP;
+CLOSE c_transadeporeti;
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('💣 Error: Los datos suministrados no existen');
+
+END actualizarAhorros;
+/
 
 
 
@@ -1079,12 +1200,25 @@ EXECUTE insertAhorro(5,1,2,300,15,10);
 6-MONTO NUMBER */ 
 
 EXECUTE insertTransaDeporeti(1,100,1,1,1,20);
-EXECUTE insertTransaDeporeti(2,200,2,1,1,139);
-EXECUTE insertTransaDeporeti(3,300,2,1,1,100);
-EXECUTE insertTransaDeporeti(3,300,2,1,2,40);
-EXECUTE insertTransaDeporeti(4,400,3,2,1,50);
-EXECUTE insertTransaDeporeti(5,500,1,2,1,80);
-EXECUTE insertTransaDeporeti(5,500,3,2,1,120);
---EXECUTE insertTransaDeporeti(5,500,3,2,1,150);
 
---EXECUTE actualizarAhorros;
+EXECUTE insertTransaDeporeti(2,200,1,1,1,139);
+
+EXECUTE insertTransaDeporeti(3,300,2,1,1,100);
+
+EXECUTE insertTransaDeporeti(3,300,2,1,2,40);
+
+EXECUTE insertTransaDeporeti(4,400,3,2,1,50);
+
+EXECUTE insertTransaDeporeti(5,500,1,2,1,80);
+
+EXECUTE insertTransaDeporeti(5,500,1,2,1,120);
+
+EXECUTE insertTransaDeporeti(5,500,1,2,1,150);
+
+EXECUTE insertTransaDeporeti(3,300,2,1,1,200);
+
+EXECUTE insertTransaDeporeti(1,100,1,1,1,100);
+
+
+EXECUTE actualizarAhorros;
+

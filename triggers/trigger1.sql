@@ -11,24 +11,25 @@ CREATE OR REPLACE TRIGGER CARGATIPOAHORROSUC
   FOR EACH ROW
 
 BEGIN
+      -- IF to_char(CURRENT_DATE, 'dd') = '06' AND :NEW.tipo_ahorro = 2
       IF to_char(CURRENT_DATE, 'dd') = '06' AND :NEW.tipo_ahorro = 2 
       THEN
        UPDATE SUCURSALES
         SET monto_ahorros = monto_ahorros + :NEW.saldo_interes
-        WHERE COD_SUCURSAL = :NEW.COD_SUCURSAL;
+      WHERE COD_SUCURSAL = :NEW.COD_SUCURSAL;
       ELSE
        UPDATE SUCURSALES
         SET monto_ahorros = monto_ahorros + :NEW.saldo_ahorro
       WHERE COD_SUCURSAL = :NEW.COD_SUCURSAL;
       END IF;
- 
+
 EXCEPTION WHEN dup_val_on_index THEN
   null;
 
 END CARGATIPOAHORROSUC;
 /
 
-drop trigger CARGATIPOAHORROSUC;
+-- drop trigger CARGATIPOAHORROSUC;
 
 
 

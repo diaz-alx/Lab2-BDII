@@ -20,7 +20,7 @@ corriente por lo tanto el procedimiento debe controlar esta situación.
 
 
 
-CREATE OR REPLACE FUNCTION calcularInteres(
+CREATE OR REPLACE FUNCTION calcularInteresDelAhorro(
     p_tipoInteres number,
     p_monto number
 )
@@ -38,15 +38,16 @@ BEGIN
     ELSIF p_tipoInteres = 3 THEN
     v_interes := 0.06;
     END IF;
-   -- Interes calculado mediante el valor depositado y el tipo de interes
+    -- Interes calculado mediante el valor depositado y el tipo de interes
     v_interes_calculado := (v_monto * v_interes) + v_monto;
+    
  
    RETURN v_interes_calculado;
     EXCEPTION
    WHEN NO_DATA_FOUND THEN
        DBMS_OUTPUT.PUT_LINE('💣 Error: El préstamo no ha sido encontrado.');
 
-END calcularInteres;
+END calcularInteresDelAhorro;
 /
 
 
@@ -98,30 +99,33 @@ OPEN c_transaDepoReti;
     
     -- TIPO DE AHORRO,Navidad 1, Corriente 2, Escolar 3
     -- CONDICION DE TRANSACCION 1= DEPOSITO, 2=RETIRO
-    IF v_tipo_ahorro = 2
-        -- No calcular el interes
-    ELSE 
-        -- Si calcular el interes
-    -- Actualizar en la tabla
-    -- Terminar y a mimir
-    
-    --IF  v_tipo_transac = 1 THEN
-    UPDATE AHORROS
-    SET 
-    saldo_ahorro = calcularInteres(v_tipo_ahorro,saldo_ahorro) + v_monto,
-    saldo_interes = saldo_interes + (calcularInteres(v_tipo_ahorro,saldo_ahorro) - saldo_ahorro),
-    fecha_mod = SYSDATE
-    WHERE
-    no_cuenta = v_no_cuenta;
 
+    IF  v_tipo_transac = 1 AND v_tipo_ahorro = 2 THEN
+        -- No calcular el interes
+        UPDATE AHORROS
+        SET
+        saldo_ahorro = saldo_ahorro + v_monto,
+        fecha_mod = SYSDATE
+        WHERE
+        no_cuenta = v_no_cuenta;
+
+    ELSIF v_tipo_transac = 1 AND (v_tipo_ahorro = 1 OR v_tipo_ahorro = 3) THEN
+        UPDATE AHORROS
+        SET 
+        saldo_ahorro = calcularInteresDelAhorro(v_tipo_ahorro,saldo_ahorro) + v_monto,
+        saldo_interes = saldo_interes + (calcularInteresDelAhorro(v_tipo_ahorro,saldo_ahorro) - saldo_ahorro),
+        fecha_mod = SYSDATE
+        WHERE
+        no_cuenta = v_no_cuenta;
+
+    --ENTRA COMO RETIRO
     ELSIF v_tipo_transac = 2 THEN
-    UPDATE AHORROS
-    SET     
-    saldo_ahorro = saldo_ahorro - v_monto,
-    -- saldo_interes = saldo_interes + calcularInteres(v_tipo_ahorro,saldo_ahorro) - saldo_ahorro,
-    fecha_mod = SYSDATE
-    WHERE
-    no_cuenta = v_no_cuenta;
+        UPDATE AHORROS
+        SET     
+        saldo_ahorro = saldo_ahorro - v_monto,
+        fecha_mod = SYSDATE
+        WHERE
+        no_cuenta = v_no_cuenta;
     END IF;
 
     --ACTUALIZA EL ESTADO DEL DEPOSITO O RETIRO PARA QUE NO SE VUELVA A REPETIR
@@ -143,4 +147,6 @@ END actualizarAhorros;
 /
 
 -- INSERCION DE DATOS
-EXECUTE insertTransaDeporeti(2,200,2,1,1,139);
+--EXECUTE insertTransaDeporeti(2,200,2,1,1,139);
+ 
+EXECUTE actualizarAhorros;

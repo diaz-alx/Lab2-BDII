@@ -26,20 +26,36 @@ CREATE TABLE AUDITORIA (
         REFERENCES tipos_ahorros (id_tipo_ahorro)
 );
 
+CREATE SEQUENCE sec_cod_aut
+INCREMENT BY 1
+START WITH 1
+MAXVALUE 99999
+MINVALUE 1;
 
 */
 
 CREATE OR REPLACE TRIGGER AUDITORIA 
 -- Inicio de la sección declarativa
-AFTER UPDATE OF saldo_ahorro
-  ON AHORROS
+AFTER INSERT OF ID_TRANSACCION
+  ON TRANSADEPORETI
   FOR EACH ROW
 
 BEGIN
 -- Inicio de la sección ejecutable
-  
+  id_auditoria 
+    id_transaccion 
+    id_cliente 
+    id_tipo_ahorro 
+    tipo_operacion 
+    tipo_transac 
+    tabla 
+    saldo_anterior
+    monto_deposito
+    saldo_final
+    usuario 
 
 
+    
 EXCEPTION
 -- Inicio de la sección de excepciones
 

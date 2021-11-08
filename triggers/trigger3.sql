@@ -31,8 +31,15 @@ INCREMENT BY 1
 START WITH 1
 MAXVALUE 99999
 MINVALUE 1;
-
 */
+
+CREATE OR REPLACE VIEW auditoria_vista AS
+    SELECT ah.id_cliente, ah.id_tipo_ahorro, td.tipo_transac, ah.saldo_ahorro, td.monto,   
+        FROM AHORROS ah, TRANSADEPORETI td
+            WHERE id_cliente =
+                AND
+
+
 
 CREATE OR REPLACE TRIGGER AUDITORIA 
 -- Inicio de la sección declarativa
@@ -42,7 +49,7 @@ AFTER INSERT OF ID_TRANSACCION
 
 BEGIN
 -- Inicio de la sección ejecutable
-  id_auditoria 
+    id_auditoria 
     id_transaccion 
     id_cliente 
     id_tipo_ahorro 
@@ -62,7 +69,7 @@ BEGIN
         monto_deposito = :NEW.monto
         usuario = :NEW.usuario
         WHERE id_auditoria = :NEW.id_auditoria;
-        
+    
 
 
     

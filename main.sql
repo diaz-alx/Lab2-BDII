@@ -830,10 +830,11 @@ CREATE TABLE transaDepoReti (
 );
 
 
+
 -- 5 AUDITORIA
 CREATE TABLE AUDITORIA (
     id_auditoria NUMBER NOT NULL,
-    id_transaccion NUMBER NOT NULL,
+    --id_transaccion NUMBER NOT NULL,
     id_cliente NUMBER NOT NULL,
     id_tipo_ahorro NUMBER NOT NULL,
     tipo_operacion CHAR NOT NULL,
@@ -846,8 +847,6 @@ CREATE TABLE AUDITORIA (
     CONSTRAINT tipo_operacion_ck CHECK ( tipo_operacion IN ('I', 'U', 'D')),
     CONSTRAINT auditoria_tipo_transac_ck CHECK ( tipo_transac IN(1, 2)),
     CONSTRAINT auditoria_pk PRIMARY KEY (id_auditoria),
-    CONSTRAINT auditoria_transaDepoReti_fk FOREIGN KEY (id_transaccion)
-        REFERENCES transaDepoReti (id_transaccion),
     CONSTRAINT auditoria_cliente_fk FOREIGN KEY (id_cliente)
         REFERENCES clientes(id_cliente),
     CONSTRAINT auditoria_tipo_ahorro_fk FOREIGN KEY (id_tipo_ahorro)
@@ -1223,6 +1222,87 @@ IS
   END calcularInteresDeCorriente;
 /
 
+-- TRIGGER 1 --
+CREATE OR REPLACE TRIGGER TRIGGER_1 
+
+-- Inicio de la sección declarativa
+AFTER UPDATE OF saldo_ahorro
+  ON AHORROS
+  FOR EACH ROW
+
+BEGIN
+-- Inicio de la sección ejecutable
+    IF to_char(CURRENT_DATE, 'dd') = '06' AND :NEW.tipo_ahorro = 2 
+      THEN
+      IF :NEW.saldo_interes > 0 THEN
+       UPDATE SUCURSALES
+        SET monto_ahorros = monto_ahorros + :NEW.saldo_interes
+      WHERE COD_SUCURSAL = :NEW.COD_SUCURSAL;
+      ELSE
+       UPDATE SUCURSALES
+        SET monto_ahorros = monto_ahorros + :NEW.saldo_ahorro
+      WHERE COD_SUCURSAL = :NEW.COD_SUCURSAL;
+      END IF;
+    ELSE
+      UPDATE SUCURSALES
+        SET monto_ahorros = monto_ahorros + :NEW.saldo_ahorro
+      WHERE COD_SUCURSAL = :NEW.COD_SUCURSAL;
+    END IF;
+
+EXCEPTION WHEN dup_val_on_index THEN
+  null;
+
+END TRIGGER_1;
+/
+
+-- Despues de correr el trigger 1 se corre este código
+/*
+UPDATE AHORROS
+  SET saldo_interes = 0
+  WHERE tipo_ahorro = 2;
+*/
+
+-- TRIGGER 2
+
+CREATE OR REPLACE TRIGGER TRIGGER_2 
+
+-- Inicio de la sección declarativa
+AFTER UPDATE OF saldo_ahorro
+  ON AHORROS
+  FOR EACH ROW
+
+BEGIN
+-- Inicio de la sección ejecutable
+    IF to_char(CURRENT_DATE, 'dd') = '06' AND :NEW.tipo_ahorro = 2 
+      THEN
+      IF :NEW.saldo_interes > 0 THEN
+       UPDATE TIPO_AH_SUC
+        SET monto_ahorros = monto_ahorros + :NEW.saldo_interes
+      WHERE COD_SUCURSAL = :NEW.COD_SUCURSAL
+      AND id_tipo_ahorro = :NEW.tipo_ahorro;
+      ELSE
+       UPDATE TIPO_AH_SUC
+        SET monto_ahorros = monto_ahorros + :NEW.saldo_ahorro
+      WHERE COD_SUCURSAL = :NEW.COD_SUCURSAL
+      AND id_tipo_ahorro = :NEW.tipo_ahorro;
+      END IF;
+    ELSE
+      UPDATE TIPO_AH_SUC
+        SET monto_ahorros = monto_ahorros + :NEW.saldo_ahorro
+      WHERE COD_SUCURSAL = :NEW.COD_SUCURSAL
+      AND id_tipo_ahorro = :NEW.tipo_ahorro;
+    END IF;
+
+EXCEPTION WHEN dup_val_on_index THEN
+  null;
+
+END TRIGGER_2;
+/
+
+
+
+
+
 
 -- DROP procedure calcularInteresDeCorriente;
 
@@ -1245,6 +1325,23 @@ EXECUTE insertAhorro(3,2,1,100,15,10);
 EXECUTE insertAhorro(4,3,2,200,15,10);
 EXECUTE insertAhorro(5,1,2,300,15,10);
 
+
+-- Insertando valores en tipos ah sucursales
+BEGIN
+INSERT INTO TIPO_AH_SUC VALUES(1,1,0,SYSDATE);
+INSERT INTO TIPO_AH_SUC VALUES(1,2,0,SYSDATE);
+INSERT INTO TIPO_AH_SUC VALUES(1,3,0,SYSDATE);
+INSERT INTO TIPO_AH_SUC VALUES(2,1,0,SYSDATE);
+INSERT INTO TIPO_AH_SUC VALUES(2,2,0,SYSDATE);
+INSERT INTO TIPO_AH_SUC VALUES(2,3,0,SYSDATE);
+INSERT INTO TIPO_AH_SUC VALUES(3,1,0,SYSDATE);
+INSERT INTO TIPO_AH_SUC VALUES(3,2,0,SYSDATE);
+INSERT INTO TIPO_AH_SUC VALUES(3,3,0,SYSDATE);
+INSERT INTO TIPO_AH_SUC VALUES(4,1,0,SYSDATE);
+INSERT INTO TIPO_AH_SUC VALUES(4,2,0,SYSDATE);
+INSERT INTO TIPO_AH_SUC VALUES(4,3,0,SYSDATE);
+END;
+/
 
 
 /*--PARAMETROS TRANSAC

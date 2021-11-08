@@ -5,7 +5,7 @@ ahorros.
 
 
 
-DROP trigger CARGATIPOAHORROSUC;
+-- DROP trigger CARGATIPOAHORROSUC;
 
 
 --Este sirve para cuando se hace un depósito en corriente cuando es día de pago

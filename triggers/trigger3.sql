@@ -33,12 +33,13 @@ MAXVALUE 99999
 MINVALUE 1;
 */
 
+/*
 CREATE OR REPLACE VIEW auditoria_vista AS
     SELECT ah.id_cliente, ah.id_tipo_ahorro, td.tipo_transac, ah.saldo_ahorro, td.monto,   
         FROM AHORROS ah, TRANSADEPORETI td
             WHERE id_cliente =
                 AND
-
+*/
 
 
 CREATE OR REPLACE TRIGGER AUDITORIA 
@@ -69,9 +70,6 @@ BEGIN
         monto_deposito = :NEW.monto
         usuario = :NEW.usuario
         WHERE id_auditoria = :NEW.id_auditoria;
-    
-
-
     
 EXCEPTION
 -- Inicio de la sección de excepciones

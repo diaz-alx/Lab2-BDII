@@ -245,7 +245,7 @@ START WITH 1
 MAXVALUE 99999
 MINVALUE 1;
 
---ECUENCIAS DE ID DE TABLAS Prestamo--
+--SECUENCIAS DE ID DE TABLAS Prestamo--
 CREATE SEQUENCE sec_no_prestamo
 INCREMENT BY 100
 START WITH 100
@@ -834,24 +834,24 @@ CREATE TABLE transaDepoReti (
 -- 5 AUDITORIA
 CREATE TABLE AUDITORIA (
     id_auditoria NUMBER NOT NULL,
-    --id_transaccion NUMBER NOT NULL,
-    id_cliente NUMBER NOT NULL,
-    id_tipo_ahorro NUMBER NOT NULL,
-    tipo_operacion CHAR NOT NULL,
-    tipo_transac NUMBER NOT NULL,
+    no_cuenta NUMBER,
+    id_cliente NUMBER,
+    id_tipo_ahorro NUMBER,
+    tipo_operacion CHAR(2),
+    tipo_transac NUMBER,
     tabla VARCHAR2(25),
-    saldo_anterior NUMBER (15, 2),
-    monto_deposito NUMBER (15, 2),
-    saldo_final NUMBER (15, 2),
+    saldo_anterior NUMBER (15, 2) DEFAULT 0,
+    monto_deposito NUMBER (15, 2) DEFAULT 0,
+    saldo_final NUMBER (15, 2) DEFAULT 0,
     usuario VARCHAR2(42),
+    fecha_transaccion date,
     CONSTRAINT tipo_operacion_ck CHECK ( tipo_operacion IN ('I', 'U', 'D')),
     CONSTRAINT auditoria_tipo_transac_ck CHECK ( tipo_transac IN(1, 2)),
     CONSTRAINT auditoria_pk PRIMARY KEY (id_auditoria),
-    CONSTRAINT auditoria_cliente_fk FOREIGN KEY (id_cliente)
-        REFERENCES clientes(id_cliente),
-    CONSTRAINT auditoria_tipo_ahorro_fk FOREIGN KEY (id_tipo_ahorro)
-        REFERENCES tipos_ahorros (id_tipo_ahorro)
+    CONSTRAINT auditoria_AHORROS_fk FOREIGN KEY (NO_CUENTA)
+        REFERENCES AHORROS (NO_CUENTA) 
 );
+
 
 
 -- 6 ALTER TABLA SUCURSAL
@@ -899,7 +899,6 @@ MINVALUE 1;
 -- PROCEDIMIENTOS PARA AHORROS -----
 
 --TIPOS AHORRO
--- Hace falta
 CREATE OR REPLACE PROCEDURE Nuevo_tipoAhorro(
     p_ahorro_descripcion  IN tipos_ahorros.descripcion%TYPE,
     p_ahorro_tasa_interes  IN tipos_ahorros.tasa_interes%TYPE
@@ -994,7 +993,7 @@ BEGIN
 
 -- CONDICION DE TRANSACCION 1= DEPOSITO, 2=RETIRO solo de cuenta corriente se puede retirar.
 
-IF p_tipo_ahorro = 2 AND (p_tipo_transac = 1 OR  p_tipo_transac =2 ) THEN
+IF p_tipo_ahorro = 2 AND (p_tipo_transac = 1 OR  p_tipo_transac=2 ) THEN
   INSERT INTO transaDepoReti
   VALUES(
     intSeqVal,
@@ -1200,7 +1199,7 @@ IS
     WHEN c_ahorros%NOTFOUND;
 
     -- IF to_char(CURRENT_DATE, 'dd') = '01' OR to_char(CURRENT_DATE, 'dd') = '15' THEN
-    IF to_char(CURRENT_DATE, 'dd') = '06' THEN
+    IF to_char(CURRENT_DATE, 'dd') = '08' THEN
     --IF v_tipo_ahorro = 2
     --THEN
     UPDATE AHORROS
@@ -1223,7 +1222,7 @@ IS
 /
 
 -- TRIGGER 1 --
-CREATE OR REPLACE TRIGGER TRIGGER_1 
+CREATE OR REPLACE TRIGGER CARGATIPOAHORROSUC 
 
 -- Inicio de la sección declarativa
 AFTER UPDATE OF saldo_ahorro
@@ -1232,7 +1231,7 @@ AFTER UPDATE OF saldo_ahorro
 
 BEGIN
 -- Inicio de la sección ejecutable
-    IF to_char(CURRENT_DATE, 'dd') = '06' AND :NEW.tipo_ahorro = 2 
+    IF to_char(CURRENT_DATE, 'dd') = '08' AND :NEW.tipo_ahorro = 2 
       THEN
       IF :NEW.saldo_interes > 0 THEN
        UPDATE SUCURSALES
@@ -1252,10 +1251,10 @@ BEGIN
 EXCEPTION WHEN dup_val_on_index THEN
   null;
 
-END TRIGGER_1;
+END CARGATIPOAHORROSUC;
 /
 
--- Despues de correr el trigger 1 se corre este código
+
 /*
 UPDATE AHORROS
   SET saldo_interes = 0
@@ -1264,7 +1263,7 @@ UPDATE AHORROS
 
 -- TRIGGER 2
 
-CREATE OR REPLACE TRIGGER TRIGGER_2 
+CREATE OR REPLACE TRIGGER CARGACUENTASCORRIENTES 
 
 -- Inicio de la sección declarativa
 AFTER UPDATE OF saldo_ahorro
@@ -1273,7 +1272,7 @@ AFTER UPDATE OF saldo_ahorro
 
 BEGIN
 -- Inicio de la sección ejecutable
-    IF to_char(CURRENT_DATE, 'dd') = '06' AND :NEW.tipo_ahorro = 2 
+    IF to_char(CURRENT_DATE, 'dd') = '08' AND :NEW.tipo_ahorro = 2 
       THEN
       IF :NEW.saldo_interes > 0 THEN
        UPDATE TIPO_AH_SUC
@@ -1296,34 +1295,45 @@ BEGIN
 EXCEPTION WHEN dup_val_on_index THEN
   null;
 
-END TRIGGER_2;
+END CARGACUENTASCORRIENTES;
+/
+
+--- TRIGGER 3 ----
+CREATE OR REPLACE TRIGGER INSERT_AUDITORIA
+AFTER INSERT OR UPDATE 
+ON AHORROS
+FOR EACH ROW
+DECLARE
+l_tipo_transac NUMBER := CASE 
+WHEN :new.saldo_ahorro > :old.saldo_ahorro THEN 1
+ELSE 2 END;
+
+BEGIN
+IF INSERTING THEN
+
+INSERT INTO AUDITORIA(ID_AUDITORIA,NO_CUENTA,ID_CLIENTE,id_tipo_ahorro,TIPO_OPERACION,TIPO_TRANSAC,TABLA,saldo_anterior,monto_deposito,saldo_final,USUARIO,fecha_transaccion)
+VALUES(sec_cod_aut.nextval,:NEW.NO_CUENTA,:NEW.id_cliente,:NEW.tipo_ahorro,'I',1,'AHORROS',:new.saldo_ahorro,:new.saldo_ahorro,:new.saldo_ahorro,USER,SYSDATE);
+END IF;
+
+IF UPDATING THEN
+IF l_tipo_transac = 1 THEN
+INSERT INTO AUDITORIA(ID_AUDITORIA,NO_CUENTA,ID_CLIENTE,id_tipo_ahorro,TIPO_OPERACION,TIPO_TRANSAC,TABLA,saldo_anterior,monto_deposito,saldo_final,USUARIO,fecha_transaccion)
+VALUES(sec_cod_aut.nextval,:NEW.NO_CUENTA,:NEW.id_cliente,:NEW.tipo_ahorro,'U',l_tipo_transac,'AHORROS',:old.saldo_ahorro,:new.saldo_ahorro + :old.saldo_ahorro,:new.saldo_ahorro,USER,SYSDATE);
+ELSE
+INSERT INTO AUDITORIA(ID_AUDITORIA,NO_CUENTA,ID_CLIENTE,id_tipo_ahorro,TIPO_OPERACION,TIPO_TRANSAC,TABLA,saldo_anterior,monto_deposito,SALDO_FINAL,USUARIO,fecha_transaccion)
+VALUES (sec_cod_aut.nextval,:NEW.NO_CUENTA,:NEW.id_cliente,:NEW.tipo_ahorro,'U',l_tipo_transac,'AHORROS',:OLD.SALDO_AHORRO,:new.saldo_ahorro - :old.saldo_ahorro,:new.saldo_ahorro ,USER,SYSDATE);
+END IF;
+END IF;
+
+END INSERT_AUDITORIA;
 /
 
 
 
-
-
-
--- DROP procedure calcularInteresDeCorriente;
-
---Execute
+-- INVOCACION PROCEDIMIENTO  NUEVOS TIPOS AHORROS
 EXECUTE Nuevo_tipoAhorro('Ahorro de Navidad', 0.06);
 EXECUTE Nuevo_tipoAhorro('Ahorro de Corriente', 0.04);
 EXECUTE Nuevo_tipoAhorro('Ahorro escolar', 0.06);
-
---
-/*--PARAMETROS AHORROS
-1-id_cliente number
-2-tipo_ahorro number
-3-cod_sucursal number 
-4-deposito MENSUAL number
-5-fecha deposito=dia, 
-6-fecha retiro=dia */ 
-EXECUTE insertAhorro(1,1,1,10,15,10);
-EXECUTE insertAhorro(2,1,2,10,15,10);
-EXECUTE insertAhorro(3,2,1,100,15,10);
-EXECUTE insertAhorro(4,3,2,200,15,10);
-EXECUTE insertAhorro(5,1,2,300,15,10);
 
 
 -- Insertando valores en tipos ah sucursales
@@ -1343,7 +1353,24 @@ INSERT INTO TIPO_AH_SUC VALUES(4,3,0,SYSDATE);
 END;
 /
 
+-- -- INVOCACION PROCEDIMIENTO  DE APERTURA DE AHORROS
+/*--PARAMETROS AHORROS
+1-id_cliente number
+2-tipo_ahorro number
+3-cod_sucursal number 
+4-deposito MENSUAL number
+5-fecha deposito=dia, 
+6-fecha retiro=dia */ 
+EXECUTE insertAhorro(1,1,1,10,15,10);
+EXECUTE insertAhorro(2,1,2,10,15,10);
+EXECUTE insertAhorro(3,2,1,100,15,10);
+EXECUTE insertAhorro(4,3,2,200,15,10);
+EXECUTE insertAhorro(5,1,2,300,15,10);
 
+
+
+
+-- INVOCACION PROCEDIMIENTO  DE INSERCCION DE DEPOSITOS O RETIROS
 /*--PARAMETROS TRANSAC
 1-id_cliente number
 2-NO CUENTA number SEC 100 EN 100
@@ -1371,7 +1398,10 @@ EXECUTE insertTransaDeporeti(5,500,1,2,1,150);
 EXECUTE insertTransaDeporeti(1,100,1,1,1,100);
 
 
+
+-- INVOCACION PROCEDIMIENTO  DE ACTUALIZACION DE DEPOSITOS Y RETIROS
 EXECUTE actualizarAhorros;
 
+-- INVOCACION PROCEDIMIENTO  DE ACTUALIZACION DE LAS CUENTAS TIPO AHORRO CORRIENTE
 EXECUTE calcularInteresDeCorriente;
 
